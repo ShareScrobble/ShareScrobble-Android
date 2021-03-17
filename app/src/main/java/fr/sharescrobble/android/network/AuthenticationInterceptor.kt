@@ -2,7 +2,7 @@ package fr.sharescrobble.android.network
 
 import android.util.Log
 import fr.sharescrobble.android.auth.AuthService
-import fr.sharescrobble.android.core.Globals
+import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.network.models.auth.RefreshTokenModel
 import fr.sharescrobble.android.network.repositories.AuthRepository
 import kotlinx.coroutines.runBlocking
@@ -14,7 +14,7 @@ class AuthenticationInterceptor : Interceptor {
         synchronized(this) {
             val original = chain.request()
 
-            Log.d(Globals.TAG, original.url().encodedPath())
+            Log.d(Constants.TAG, original.url().encodedPath())
 
             // Whitelist some endpoints here
             if (original.url().encodedPath().contains("/auth/refresh")
@@ -29,7 +29,7 @@ class AuthenticationInterceptor : Interceptor {
                 return chain.proceed(original)
             }
 
-            Log.d(Globals.TAG, "Added a token " + AuthService.accessToken)
+            Log.d(Constants.TAG, "Added a token " + AuthService.accessToken)
 
             val originalHttpUrl = original.url()
             val requestBuilder = original.newBuilder()
@@ -42,8 +42,8 @@ class AuthenticationInterceptor : Interceptor {
 
             when {
                 /*initialResponse.code() == 403 || */initialResponse.code() == 401 -> {
-                Log.d(Globals.TAG, "Need to refresh")
-                Log.d(Globals.TAG, AuthService.refreshToken.toString())
+                Log.d(Constants.TAG, "Need to refresh")
+                Log.d(Constants.TAG, AuthService.refreshToken.toString())
 
                 initialResponse.close()
 
@@ -57,12 +57,12 @@ class AuthenticationInterceptor : Interceptor {
                         .execute().body()
                 }
 
-                Log.d(Globals.TAG, tokens.toString())
+                Log.d(Constants.TAG, tokens.toString())
                 if (tokens != null) {
                     AuthService.storeCredentials(tokens.accessToken, tokens.refreshToken)
                 }
 
-                Log.d(Globals.TAG, "Added a new token " + AuthService.accessToken)
+                Log.d(Constants.TAG, "Added a new token " + AuthService.accessToken)
 
                 // Add it to the request
                 return chain.proceed(

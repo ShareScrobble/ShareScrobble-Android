@@ -1,5 +1,5 @@
 package fr.sharescrobble.android.core
 
-object Globals {
+object Constants {
     const val TAG = "SScrobble"
 }

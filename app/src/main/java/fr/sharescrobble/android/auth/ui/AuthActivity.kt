@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
-import fr.sharescrobble.android.core.Globals
+import fr.sharescrobble.android.core.Constants
 
 class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,15 +14,12 @@ class AuthActivity : AppCompatActivity() {
 
         val base64Token = intent.dataString
 
-        Log.d(Globals.TAG, "Auth")
-        Log.d(Globals.TAG, base64Token.toString());
-
         if (base64Token == null) {
-            AuthService.initLogin()
+            AuthService.login()
             return
         }
 
-        Log.d(Globals.TAG, base64Token.toString())
-        AuthService.finishLogin(base64Token.toString())
+        Log.d(Constants.TAG, base64Token.toString())
+        AuthService.loginCallback(base64Token.toString())
     }
 }

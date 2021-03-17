@@ -1,8 +1,8 @@
-package fr.sharescrobble.android.auth.data
+package fr.sharescrobble.android.network.models.auth
 
 import java.util.*
 
-data class UserModel(
+data class JwtModel(
     var id: Int,
     var username: String,
     var iat: Date?,
