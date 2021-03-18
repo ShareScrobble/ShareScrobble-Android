@@ -8,15 +8,16 @@ import androidx.core.content.ContextCompat.startActivity
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import fr.sharescrobble.android.MyApplication
+import fr.sharescrobble.android.auth.ui.AuthActivity
 import fr.sharescrobble.android.network.models.auth.AuthUrlModel
 import fr.sharescrobble.android.network.models.auth.TokensModel
 import fr.sharescrobble.android.network.models.auth.JwtModel
 import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.network.repositories.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,7 +70,7 @@ object AuthService {
         })
     }
 
-    fun loginCallback(toString: String) {
+    fun loginCallback(ctx: Context, toString: String) {
         // Get base64 token
         val token = toString.replace("sscrobble://auth/", "");
 
@@ -90,6 +91,11 @@ object AuthService {
 
         Log.d(Constants.TAG, accessToken.toString())
         Log.d(Constants.TAG, currentJwtUser.toString())
+
+        val intent = Intent(ctx, MainActivity::class.java)
+        ctx.startActivity(intent)
+
+        return
     }
 
     fun storeCredentials(accessToken: String?, refreshToken: String?) {

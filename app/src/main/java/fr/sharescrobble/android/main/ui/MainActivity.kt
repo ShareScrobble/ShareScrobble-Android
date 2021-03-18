@@ -33,6 +33,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (!AuthService.isAuthenticated()) {
+            val intent = Intent(this, AuthActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+
+            return
+        }
+
         mainFrame = findViewById(R.id.main_frame)
         bottomNavigationView = findViewById(R.id.main_bottom_navigation)
 
@@ -42,17 +50,6 @@ class MainActivity : AppCompatActivity() {
         fm.beginTransaction().add(R.id.main_frame, homeFragment).commit()
 
         this.configureBottomMenu()
-
-        Log.d(Constants.TAG, "Main")
-        Log.d(Constants.TAG, intent.dataString.toString())
-
-        if (!AuthService.isAuthenticated()) {
-            val intent = Intent(this, AuthActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-
-            return
-        }
     }
 
     private fun configureBottomMenu() {
