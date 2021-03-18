@@ -48,7 +48,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         // Set up the RecyclerView
         this.recyclerView = layout.findViewById(R.id.rvFriends)
         this.recyclerView.layoutManager =
-            GridLayoutManager(activity, Constants.NB_COLUMNS, GridLayoutManager.VERTICAL, false)
+            GridLayoutManager(activity, Constants.NB_COLUMNS_FRIENDS, GridLayoutManager.VERTICAL, false)
 
         // Load data once
         this.getFriends(true)

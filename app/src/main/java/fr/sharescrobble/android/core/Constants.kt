@@ -2,5 +2,6 @@ package fr.sharescrobble.android.core
 
 object Constants {
     const val TAG = "SScrobble"
-    const val NB_COLUMNS = 2
+    const val NB_COLUMNS_FRIENDS = 2
+    const val NB_COLUMNS_HISTORY = 1
 }

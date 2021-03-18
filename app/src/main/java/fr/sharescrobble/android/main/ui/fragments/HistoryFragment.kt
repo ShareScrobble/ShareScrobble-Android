@@ -1,60 +1,102 @@
 package fr.sharescrobble.android.main.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.R
+import fr.sharescrobble.android.auth.AuthService
+import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.main.adapter.HistoryAdapter
+import fr.sharescrobble.android.network.models.users.UserScrobbleModel
+import fr.sharescrobble.android.network.repositories.UsersRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
+    private lateinit var layout: View
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HistoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var loadingIndicator: LinearProgressIndicator
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var adapter: HistoryAdapter? = null
+    private lateinit var historySwipeContainer: SwipeRefreshLayout
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
+        this.layout = inflater.inflate(R.layout.fragment_history, container, false)
+
+        this.loadingIndicator = this.layout.findViewById(R.id.rvHistoryLoading)
+
+        // Set up the pull to refresh
+        this.historySwipeContainer = this.layout.findViewById(R.id.historySwipeContainer)
+        this.historySwipeContainer.setOnRefreshListener { this.getHistory(false) }
+
+        // Set up the RecyclerView
+        this.recyclerView = layout.findViewById(R.id.rvHistory)
+        this.recyclerView.layoutManager =
+            GridLayoutManager(activity, Constants.NB_COLUMNS_HISTORY, GridLayoutManager.VERTICAL, false)
+
+        // Load data once
+        this.getHistory(true)
+
+        return this.layout
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HistoryFragmentr.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HistoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onItemClick(view: View?, position: Int) {
+        Log.i(
+            Constants.TAG,
+            "You clicked " + this.adapter!!.getItem(position) + ", which is at cell position " + position
+        );
+    }
+
+    private fun getHistory(progress: Boolean = true) {
+        if (progress) {
+            // Display loading
+            this.loadingIndicator.show()
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val data = UsersRepository.apiInterface.getUserScrobbles(
+                    AuthService.currentJwtUser?.id?.toLong() ?: 0
+                )
+                withContext(Dispatchers.Main) {
+                    data.forEach { i -> Log.d(Constants.TAG, i.toString()) }
+                    createOrPopulateRecyclerView(data)
                 }
+
+            } catch (e: Throwable) {
+                TODO("Handle API errors")
             }
+        }
+    }
+
+    private fun createOrPopulateRecyclerView(data: Array<UserScrobbleModel>) {
+        if (this.adapter == null) {
+            this.adapter = HistoryAdapter(activity, data)
+            this.adapter!!.setClickListener(this)
+            this.recyclerView.adapter = adapter
+        }
+
+        this.loadingIndicator.hide()
+        this.historySwipeContainer.isRefreshing = false
+
+        if (this.adapter != null) {
+            this.adapter!!.clear()
+            this.adapter!!.addAll(data)
+        }
     }
 }
