@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
@@ -25,7 +26,8 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
 
     private lateinit var loadingIndicator: LinearProgressIndicator
 
-    private lateinit var adapter: FriendsAdapter
+    private var adapter: FriendsAdapter? = null
+    private lateinit var friendsSwipeContainer: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
 
     // TODO: Pull to refresh https://guides.codepath.com/android/implementing-pull-to-refresh-guide
@@ -39,13 +41,17 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
 
         this.loadingIndicator = this.layout.findViewById(R.id.rvFriendsLoading)
 
+        // Set up the pull to refresh
+        this.friendsSwipeContainer = this.layout.findViewById(R.id.friendsSwipeContainer)
+        this.friendsSwipeContainer.setOnRefreshListener { this.getFriends(false) }
+
         // Set up the RecyclerView
         this.recyclerView = layout.findViewById(R.id.rvFriends)
         this.recyclerView.layoutManager =
             GridLayoutManager(activity, Constants.NB_COLUMNS, GridLayoutManager.VERTICAL, false)
 
         // Load data once
-        this.getFriends()
+        this.getFriends(true)
 
         return layout
     }
@@ -53,13 +59,15 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
     override fun onItemClick(view: View?, position: Int) {
         Log.i(
             Constants.TAG,
-            "You clicked number " + this.adapter.getItem(position) + ", which is at cell position " + position
+            "You clicked " + this.adapter!!.getItem(position) + ", which is at cell position " + position
         );
     }
 
-    private fun getFriends() {
-        // Display loading
-        this.loadingIndicator.show()
+    private fun getFriends(progress: Boolean = true) {
+        if (progress) {
+            // Display loading
+            this.loadingIndicator.show()
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -72,15 +80,21 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                 TODO("Handle API errors")
             }
         }
-
-
     }
 
     private fun createRecyclerView(data: Array<UserFriendModel>) {
-        this.adapter = FriendsAdapter(activity, data)
-        this.adapter.setClickListener(this)
-        this.recyclerView.adapter = adapter
+        if (this.adapter == null) {
+            this.adapter = FriendsAdapter(activity, data)
+            this.adapter!!.setClickListener(this)
+            this.recyclerView.adapter = adapter
+        }
 
         this.loadingIndicator.hide()
+        this.friendsSwipeContainer.isRefreshing = false
+
+        if (this.adapter != null) {
+            this.adapter!!.clear()
+            this.adapter!!.addAll(data)
+        }
     }
 }

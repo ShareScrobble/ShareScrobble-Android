@@ -15,7 +15,7 @@ import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
 
 class FriendsAdapter internal constructor(context: Context?, data: Array<UserFriendModel>) :
     RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
-    private val mData: Array<UserFriendModel> = data
+    private var mData: MutableList<UserFriendModel> = data.toMutableList()
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null
 
@@ -70,9 +70,18 @@ class FriendsAdapter internal constructor(context: Context?, data: Array<UserFri
         mClickListener = itemClickListener
     }
 
+    fun clear() {
+        mData.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addAll(data: Array<UserFriendModel>) {
+        mData.addAll(data)
+        notifyDataSetChanged()
+    }
+
     // parent activity will implement this method to respond to click events
     interface ItemClickListener {
         fun onItemClick(view: View?, position: Int)
     }
-
 }
