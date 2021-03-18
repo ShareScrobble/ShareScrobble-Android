@@ -1,6 +1,6 @@
-package fr.sharescrobble.android.auth.data
+package fr.sharescrobble.android.network.models.auth
 
-data class AuthModel(
+data class AuthUrlModel(
     var status: String,
     var message: String? = "",
     var url: String? = ""

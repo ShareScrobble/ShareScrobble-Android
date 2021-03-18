@@ -8,12 +8,18 @@ import androidx.core.content.ContextCompat.startActivity
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import fr.sharescrobble.android.MyApplication
-import fr.sharescrobble.android.auth.data.AuthModel
-import fr.sharescrobble.android.auth.data.AuthRepository
-import fr.sharescrobble.android.auth.data.TokensModel
-import fr.sharescrobble.android.auth.data.UserModel
-import fr.sharescrobble.android.core.Globals
-import kotlinx.coroutines.coroutineScope
+import fr.sharescrobble.android.network.models.auth.AuthUrlModel
+import fr.sharescrobble.android.network.models.auth.TokensModel
+import fr.sharescrobble.android.network.models.auth.JwtModel
+import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.network.repositories.AuthRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -22,51 +28,55 @@ object AuthService {
         MyApplication.getCtx().getSharedPreferences("Auth", Context.MODE_PRIVATE)
     private val editor = sharedPreferences.edit()
 
-    var currentUser: UserModel? = null
+    var currentJwtUser: JwtModel? = null
         private set
     var accessToken: String? = null
         private set
     var refreshToken: String? = null
         private set
 
-    private var authRepository = AuthRepository()
-
     init {
         // Restore creds
         this.restoreCredentials()
         this.decodeJWT()
 
-        Log.d(Globals.TAG, "Loaded AuthService");
+        Log.d(Constants.TAG, "Loaded AuthService");
 
-        if (currentUser != null) {
-            Log.d(Globals.TAG, "Currently logged in " + currentUser.toString())
+        if (currentJwtUser != null) {
+            Log.d(Constants.TAG, "Currently logged in " + currentJwtUser.toString())
         }
     }
 
-    fun initLogin() {
+    fun login() {
         // Query the URL to open
-        authRepository.getAuthUrl()
+        AuthRepository.apiInterface.getAuthUrl().enqueue(object : Callback<AuthUrlModel> {
+            override fun onResponse(call: Call<AuthUrlModel>, response: Response<AuthUrlModel>) {
+                val body = response.body() ?: return;
+
+                Log.d(Constants.TAG, body.toString())
+
+                // Open intent
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(body.url))
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(MyApplication.getCtx(), intent, null)
+            }
+
+            override fun onFailure(call: Call<AuthUrlModel>, t: Throwable) {
+                // Display an error message
+                Log.e(Constants.TAG, t.toString());
+                TODO("Not yet implemented")
+            }
+        })
     }
 
-    fun login(body: AuthModel?) {
-        if (body == null) return
-
-        Log.d(Globals.TAG, body.toString())
-
-        // Open intent
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(body.url))
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(MyApplication.getCtx(), intent, null)
-    }
-
-    fun finishLogin(toString: String) {
+    fun loginCallback(toString: String) {
         // Get base64 token
         val token = toString.replace("sscrobble://auth/", "");
 
         // Decode it & store it
-        Log.d(Globals.TAG, token)
+        Log.d(Constants.TAG, token)
         val json = String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8)
-        Log.d(Globals.TAG, json);
+        Log.d(Constants.TAG, json);
         val tokensResponse = Gson().fromJson(json, TokensModel::class.java);
         accessToken = tokensResponse.accessToken
         refreshToken = tokensResponse.refreshToken
@@ -78,8 +88,8 @@ object AuthService {
         this.decodeJWT()
         this.storeCredentials(accessToken, refreshToken)
 
-        Log.d(Globals.TAG, accessToken.toString())
-        Log.d(Globals.TAG, currentUser.toString())
+        Log.d(Constants.TAG, accessToken.toString())
+        Log.d(Constants.TAG, currentJwtUser.toString())
     }
 
     fun storeCredentials(accessToken: String?, refreshToken: String?) {
@@ -110,7 +120,7 @@ object AuthService {
         if (accessToken != null) {
             // Parse & store the JWT
             val parsedJWT = JWT(accessToken!!);
-            currentUser = UserModel(
+            currentJwtUser = JwtModel(
                 parsedJWT.getClaim("id").asInt() ?: 0,
                 parsedJWT.getClaim("username").asString() ?: "",
                 parsedJWT.issuedAt,
@@ -120,12 +130,19 @@ object AuthService {
     }
 
     fun logout() {
-        this.currentUser = null
+        // Clean-up the refresh token (and ignore API error)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                AuthRepository.apiInterface.revokeToken(refreshToken ?: "")
+            } catch (e: Throwable) {}
+        }
+
+        this.currentJwtUser = null
 
         this.clearCredentials()
     }
 
     fun isAuthenticated(): Boolean {
-        return this.currentUser != null
+        return this.currentJwtUser != null
     }
 }

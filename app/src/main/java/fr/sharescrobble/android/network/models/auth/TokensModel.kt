@@ -1,4 +1,4 @@
-package fr.sharescrobble.android.auth.data
+package fr.sharescrobble.android.network.models.auth
 
 data class TokensModel(
     val accessToken: String,

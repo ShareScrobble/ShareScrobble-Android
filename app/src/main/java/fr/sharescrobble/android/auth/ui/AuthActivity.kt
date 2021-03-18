@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
-import fr.sharescrobble.android.core.Globals
+import fr.sharescrobble.android.core.Constants
 
 
 class AuthActivity : AppCompatActivity() {
@@ -18,14 +18,14 @@ class AuthActivity : AppCompatActivity() {
 
         val base64Token = intent.dataString
 
-        Log.d(Globals.TAG, "Auth")
-        Log.d(Globals.TAG, base64Token.toString());
+        Log.d(Constants.TAG, "Auth")
+        Log.d(Constants.TAG, base64Token.toString());
 
         val button: Button = this.findViewById(R.id.buttonLogin)
         button.setOnClickListener(object : OnClickListener {
             override fun onClick(v: View?) {
                 if (base64Token == null) {
-                    AuthService.initLogin()
+                    AuthService.login()
                     return
                 }
 
@@ -33,8 +33,8 @@ class AuthActivity : AppCompatActivity() {
         })
 
         if(base64Token != null) {
-            Log.d(Globals.TAG, base64Token.toString())
-            AuthService.finishLogin(base64Token.toString())
+            Log.d(Constants.TAG, base64Token.toString())
+            AuthService.loginCallback(base64Token.toString())
         }
     }
 }

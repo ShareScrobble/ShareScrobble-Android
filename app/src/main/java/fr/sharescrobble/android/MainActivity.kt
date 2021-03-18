@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.auth.ui.AuthActivity
-import fr.sharescrobble.android.core.Globals
+import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.main.MyRecyclerViewAdapter
-import fr.sharescrobble.android.network.ApiRepository
+import fr.sharescrobble.android.network.repositories.ApiRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d(Globals.TAG, "Main")
-        Log.d(Globals.TAG, intent.dataString.toString())
+        Log.d(Constants.TAG, "Main")
+        Log.d(Constants.TAG, intent.dataString.toString())
 
         if (!AuthService.isAuthenticated()) {
             val intent = Intent(this, AuthActivity::class.java)
@@ -36,12 +36,12 @@ class MainActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
             return
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = ApiRepository.apiInterface?.getUser(1)
-            withContext(Dispatchers.Main) {
-                Log.d(Globals.TAG, response.toString())
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val response = ApiRepository.apiInterface.(1)
+//            withContext(Dispatchers.Main) {
+//                Log.d(Constants.TAG, response.toString())
+//            }
+//        }
 
         // data to populate the RecyclerView with
 
