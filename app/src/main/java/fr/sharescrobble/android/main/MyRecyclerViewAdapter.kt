@@ -10,11 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import fr.sharescrobble.android.R
+import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
 
 
-class MyRecyclerViewAdapter internal constructor(context: Context?, data: Array<String>) :
+class MyRecyclerViewAdapter internal constructor(context: Context?, data: Array<UserFriendModel>) :
     RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder>() {
-    private val mData: Array<String> = data
+    private val mData: Array<UserFriendModel> = data
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null
 
@@ -27,11 +28,17 @@ class MyRecyclerViewAdapter internal constructor(context: Context?, data: Array<
     // binds the data to the TextView in each cell
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val picasso = Picasso.get()
-        holder.myTextView.text = mData[position]
+        holder.myTextView.text = mData[position].name
         //        picasso.load(RetrofitClient.TMDB_IMAGEURL + movie.posterPath).into(posterImageView)
-
-        picasso.load("https://lastfm.freetls.fastly.net/i/u/avatar170s/b4975cc33e9c9709603727518fcfeffc.webp").placeholder(R.drawable.placeholder)
-            .into(holder.myUserImage)
+        val imgSize = mData[position].image.size
+        val imgLink = mData[position].image[imgSize - 1].text
+        if (imgLink.contentEquals("")) {
+            picasso.load(R.drawable.placeholder).placeholder(R.drawable.placeholder)
+                .into(holder.myUserImage)
+        } else {
+            picasso.load(imgLink).placeholder(R.drawable.placeholder)
+                .into(holder.myUserImage)
+        }
     }
 
     // total number of cells
@@ -54,7 +61,7 @@ class MyRecyclerViewAdapter internal constructor(context: Context?, data: Array<
     }
 
     // convenience method for getting data at click position
-    fun getItem(id: Int): String {
+    fun getItem(id: Int): UserFriendModel {
         return mData[id]
     }
 

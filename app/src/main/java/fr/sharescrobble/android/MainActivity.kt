@@ -6,13 +6,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.auth.ui.AuthActivity
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.main.MyRecyclerViewAdapter
-import fr.sharescrobble.android.network.repositories.ApiRepository
+import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
+import fr.sharescrobble.android.network.repositories.LastfmRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,39 +39,54 @@ class MainActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
             return
         }
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val response = ApiRepository.apiInterface.(1)
-//            withContext(Dispatchers.Main) {
-//                Log.d(Constants.TAG, response.toString())
-//            }
-//        }
-
-        // data to populate the RecyclerView with
-
-        // data to populate the RecyclerView with
-        val data = arrayOf(
-            "1",
-            "2"
-        )
-
-        // set up the RecyclerView
 
         // set up the RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.rvFriends)
         val numberOfColumns = 2
-        recyclerView.layoutManager = GridLayoutManager(this, numberOfColumns)
-        adapter = MyRecyclerViewAdapter(this, data)
-        adapter!!.setClickListener(this)
-        recyclerView.adapter = adapter
+        recyclerView.layoutManager =
+            GridLayoutManager(this, numberOfColumns, GridLayoutManager.VERTICAL, false)
+
+        getFriends()
     }
 
 
     override fun onItemClick(view: View?, position: Int) {
         Log.i(
-            "TAG",
+            Constants.TAG,
             "You clicked number " + this.adapter!!.getItem(position) + ", which is at cell position " + position
         );
     }
 
+    private fun getFriends() {
+        val loadingIndicator = findViewById<LinearProgressIndicator>(R.id.rvFriendsLoading)
+        loadingIndicator.show()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val data = LastfmRepository.apiInterface.getFriends("SoFolichon")
 
+                Log.d(Constants.TAG, "Got friends: ${data.size}")
+                data.forEach { Log.d(Constants.TAG, "Got friends: ${it}") }
+
+                withContext(Dispatchers.Main) {
+
+
+                    createRecyclerView(data)
+                }
+
+            } catch (e: Throwable) {
+            }
+        }
+
+
+    }
+
+    private fun createRecyclerView(data: Array<UserFriendModel>) {
+        val recyclerView = findViewById<RecyclerView>(R.id.rvFriends)
+
+        adapter = MyRecyclerViewAdapter(this, data)
+        adapter!!.setClickListener(this)
+        recyclerView.adapter = adapter
+        val loadingIndicator = findViewById<LinearProgressIndicator>(R.id.rvFriendsLoading)
+        loadingIndicator.hide()
+    }
 }
