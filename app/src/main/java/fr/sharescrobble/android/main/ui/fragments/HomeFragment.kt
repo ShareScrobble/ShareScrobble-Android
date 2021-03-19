@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.work.WorkManager
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.squareup.picasso.Picasso
 import fr.sharescrobble.android.R
@@ -104,9 +105,7 @@ class HomeFragment : Fragment() {
         // Listen for sharedPreferences change (Background Worker)
         // It should but it doesn't for some obscure reasons...
         // See https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
-        listener = OnSharedPreferenceChangeListener { sharedPreferences, key ->
-            Log.d(Constants.TAG, key)
-            Log.d(Constants.TAG, sharedPreferences.getString(key, "").toString())
+        listener = OnSharedPreferenceChangeListener { _, key ->
             if (key == "sourceScrobble") loadSScrobbleData()
         }
         privatePreferences.registerOnSharedPreferenceChangeListener(listener)
@@ -239,8 +238,18 @@ class HomeFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     NotificationUtils.removeNotification(requireActivity(), 1)
 
+                    // Clear data
                     editor.remove("sourceScrobble")
+                    editor.remove("latitude")
+                    editor.remove("longitude")
                     editor.commit()
+
+                    // Clear worker
+                    WorkManager.getInstance(requireActivity()).cancelAllWorkByTag("timeTimeout")
+                    WorkManager.getInstance(requireActivity()).cancelAllWorkByTag("gpsTimeout")
+
+                    Log.d(Constants.TAG, WorkManager.getInstance(requireActivity()).getWorkInfosByTag("timeTimeout").toString())
+                    Log.d(Constants.TAG, WorkManager.getInstance(requireActivity()).getWorkInfosByTag("gpsTimeout").toString())
 
                     loadSScrobbleData()
                 }

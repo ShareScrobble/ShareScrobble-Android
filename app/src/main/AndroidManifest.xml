@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:name=".MyApplication"
@@ -14,9 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShareScrobble"
         android:usesCleartextTraffic="true">
-        <activity android:name=".main.ui.MainActivity"
-            android:launchMode="singleTop"
-            android:configChanges="screenSize|orientation|screenLayout">
+        <activity
+            android:name=".main.ui.MainActivity"
+            android:configChanges="screenSize|orientation|screenLayout"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

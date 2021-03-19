@@ -20,7 +20,21 @@
         <Preference
             android:icon="@drawable/ic_baseline_power_settings_new_24"
             android:title="Logout"
-            app:key="logout"/>
+            app:key="logout" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="GPS">
+        <CheckBoxPreference
+            android:title="Turn off automatically after being too far away from the source of music (using GPS)"
+            app:defaultValue="false"
+            app:key="gpsTimeout" />
+
+        <EditTextPreference
+            android:dependency="gpsTimeout"
+            android:title="GPS Range"
+            app:defaultValue="50"
+            app:key="gpsRange"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 </PreferenceScreen>

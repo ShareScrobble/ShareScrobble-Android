@@ -1,8 +1,11 @@
 package fr.sharescrobble.android.main.ui.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +17,9 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.MyApplication
 import fr.sharescrobble.android.R
@@ -26,6 +29,7 @@ import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.core.utils.NotificationUtils
 import fr.sharescrobble.android.main.adapter.FriendsAdapter
 import fr.sharescrobble.android.main.ui.MainActivity
+import fr.sharescrobble.android.main.worker.GPSTimeoutWorker
 import fr.sharescrobble.android.main.worker.TimeTimeoutWorker
 import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
@@ -36,12 +40,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 
 class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var privatePreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var layout: View
 
@@ -62,6 +68,8 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         this.privatePreferences =
             requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
         this.editor = privatePreferences.edit()
+        this.fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
 
         this.loadingIndicator = this.layout.findViewById(R.id.rvFriendsLoading)
 
@@ -89,6 +97,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         super.onAttach(context)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onItemClick(view: View?, position: Int) {
         val element = this.adapter!!.getItem(position);
 
@@ -116,6 +125,35 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                             WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
                                 "timeTimeout",
                                 ExistingWorkPolicy.REPLACE,
+                                workRequest
+                            )
+                        }
+
+                        // Set up GPS based timeout
+                        if (sharedPreferences.getBoolean("gpsTimeout", false)) {
+                            // Get current location and store it
+                            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                                run {
+                                    Log.d(Constants.TAG, location?.latitude.toString())
+                                    Log.d(Constants.TAG, location?.longitude.toString())
+
+                                    editor.putLong("latitude", location?.latitude?.toLong() ?: 0)
+                                    editor.putLong("longitude", location?.longitude?.toLong() ?: 0)
+                                    editor.commit()
+                                }
+                            }
+
+                            val workRequest =
+                                PeriodicWorkRequestBuilder<GPSTimeoutWorker>(
+                                    Constants.GPS_DELAY.toLong(),
+                                    TimeUnit.MINUTES
+                                ).setInitialDelay(
+                                    Constants.GPS_DELAY.toLong(),
+                                    TimeUnit.MINUTES
+                                ).build()
+                            WorkManager.getInstance(requireActivity()).enqueueUniquePeriodicWork(
+                                "timeTimeout",
+                                ExistingPeriodicWorkPolicy.REPLACE,
                                 workRequest
                             )
                         }

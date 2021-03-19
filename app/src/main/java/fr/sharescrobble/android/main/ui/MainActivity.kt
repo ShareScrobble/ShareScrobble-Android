@@ -3,8 +3,10 @@ package fr.sharescrobble.android.main.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.SearchEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,7 +19,7 @@ import fr.sharescrobble.android.main.ui.fragments.HistoryFragment
 import fr.sharescrobble.android.main.ui.fragments.HomeFragment
 import fr.sharescrobble.android.main.ui.fragments.SettingsFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
     private val fm: FragmentManager = supportFragmentManager
 
     private lateinit var mainFrame: FrameLayout
@@ -98,5 +100,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         return true
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }
