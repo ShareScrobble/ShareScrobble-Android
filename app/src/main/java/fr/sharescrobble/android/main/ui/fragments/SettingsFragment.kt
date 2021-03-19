@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -14,8 +13,6 @@ import androidx.preference.PreferenceFragmentCompat
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.auth.ui.AuthActivity
-import fr.sharescrobble.android.core.Constants
-import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat(),
     ActivityCompat.OnRequestPermissionsResultCallback {

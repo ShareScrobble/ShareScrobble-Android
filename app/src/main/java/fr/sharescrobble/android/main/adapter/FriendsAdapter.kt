@@ -29,7 +29,7 @@ class FriendsAdapter internal constructor(context: Context?, data: Array<UserFri
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val picasso = Picasso.get()
         holder.myTextView.text = mData[position].name
-        //        picasso.load(RetrofitClient.TMDB_IMAGEURL + movie.posterPath).into(posterImageView)
+
         val imgSize = mData[position].image.size
         val imgLink = mData[position].image[imgSize - 1].text
         if (imgLink.contentEquals("")) {

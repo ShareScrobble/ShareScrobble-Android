@@ -32,7 +32,7 @@ class ApiClient {
                     .build()
             }
 
-            return retrofit!!;
+            return retrofit!!
         }
     }
 }

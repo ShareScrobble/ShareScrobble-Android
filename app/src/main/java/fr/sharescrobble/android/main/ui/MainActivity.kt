@@ -3,7 +3,6 @@ package fr.sharescrobble.android.main.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.SearchEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat

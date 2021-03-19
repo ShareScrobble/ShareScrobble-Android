@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.Constants.CHANNEL_ID
 
 class MyApplication : Application() {
@@ -20,7 +19,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        MyApplication.ctx = applicationContext
+        ctx = applicationContext
 
         this.createNotificationChannel()
     }

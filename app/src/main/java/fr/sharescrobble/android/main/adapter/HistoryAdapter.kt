@@ -12,11 +12,11 @@ import fr.sharescrobble.android.R
 import fr.sharescrobble.android.core.utils.DateUtils
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 
-class HistoryAdapter internal constructor(ctx: Context?, data: Array<UserScrobbleModel>) :
+class HistoryAdapter internal constructor(private var ctx: Context?, data: Array<UserScrobbleModel>) :
     RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
     private var mData: MutableList<UserScrobbleModel> = data.toMutableList()
     private val mInflater: LayoutInflater = LayoutInflater.from(ctx)
-    private var mClickListener: HistoryAdapter.ItemClickListener? = null
+    private var mClickListener: ItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = mInflater.inflate(R.layout.history_list_item, parent, false)
@@ -25,10 +25,15 @@ class HistoryAdapter internal constructor(ctx: Context?, data: Array<UserScrobbl
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.historyTitle.text = getItem(position).lastFmData.artist.name
-        holder.historySubtitle.text =
-            getItem(position).lastFmData.album.text + " - " + getItem(position).lastFmData.name
-        holder.historyText.text =
-            "ShareScrobbled " + DateUtils.getTimeAgo(getItem(position).createdAt.time)
+        holder.historySubtitle.text = ctx?.getString(
+            R.string.view_historyTitle,
+            getItem(position).lastFmData.album.text,
+            getItem(position).lastFmData.name
+        )
+        holder.historyText.text = ctx?.getString(
+            R.string.view_historyDate,
+            DateUtils.getTimeAgo(getItem(position).createdAt.time)
+        )
 
         val picasso = Picasso.get()
         val imgSize = getItem(position).lastFmData.image.size

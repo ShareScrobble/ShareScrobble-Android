@@ -2,7 +2,6 @@ package fr.sharescrobble.android.main.worker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.location.Location
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat

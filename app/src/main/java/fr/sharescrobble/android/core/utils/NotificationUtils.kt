@@ -31,7 +31,7 @@ object NotificationUtils {
             PendingIntent.getActivity(ctx, 0, unsubscribeIntent, 0)
 
         builder.setContentTitle("ShareScrobble is running")
-        builder.setContentText("Currently sharescrobbling from " + sourceScrobble)
+        builder.setContentText("Currently sharescrobbling from $sourceScrobble")
         builder.setSmallIcon(R.drawable.ic_launcher_foreground)
         builder.addAction(
             R.drawable.ic_baseline_power_settings_new_24,

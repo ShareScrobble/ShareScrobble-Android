@@ -3,11 +3,9 @@ package fr.sharescrobble.android.auth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.Browser
 import android.util.Log
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat.startActivity
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import fr.sharescrobble.android.MyApplication
@@ -42,11 +40,11 @@ object AuthService {
         private set
 
     init {
-        // Restore creds
+        // Restore credentials
         this.restoreCredentials()
         this.decodeJWT()
 
-        Log.d(Constants.TAG, "Loaded AuthService");
+        Log.d(Constants.TAG, "Loaded AuthService")
 
         if (currentJwtUser != null) {
             Log.d(Constants.TAG, "Currently logged in " + currentJwtUser.toString())
@@ -57,7 +55,7 @@ object AuthService {
         // Query the URL to open
         AuthRepository.apiInterface.getAuthUrl().enqueue(object : Callback<AuthUrlModel> {
             override fun onResponse(call: Call<AuthUrlModel>, response: Response<AuthUrlModel>) {
-                val body = response.body() ?: return;
+                val body = response.body() ?: return
 
                 Log.d(Constants.TAG, body.toString())
 
@@ -85,13 +83,13 @@ object AuthService {
 
     fun loginCallback(ctx: Context, toString: String) {
         // Get base64 token
-        val token = toString.replace("sscrobble://auth/", "");
+        val token = toString.replace("sscrobble://auth/", "")
 
         // Decode it & store it
         Log.d(Constants.TAG, token)
         val json = String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8)
-        Log.d(Constants.TAG, json);
-        val tokensResponse = Gson().fromJson(json, TokensModel::class.java);
+        Log.d(Constants.TAG, json)
+        val tokensResponse = Gson().fromJson(json, TokensModel::class.java)
         accessToken = tokensResponse.accessToken
         refreshToken = tokensResponse.refreshToken
 
@@ -138,13 +136,13 @@ object AuthService {
     private fun decodeJWT() {
         if (accessToken != null) {
             // Parse & store the JWT
-            val parsedJWT = JWT(accessToken!!);
+            val parsedJWT = JWT(accessToken!!)
             currentJwtUser = JwtModel(
                 parsedJWT.getClaim("id").asInt() ?: 0,
                 parsedJWT.getClaim("username").asString() ?: "",
                 parsedJWT.issuedAt,
                 parsedJWT.expiresAt
-            );
+            )
         }
     }
 

@@ -21,7 +21,6 @@ import androidx.work.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import fr.sharescrobble.android.MyApplication
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
@@ -40,13 +39,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
 
 
 class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var privatePreferences: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var layout: View
@@ -60,14 +57,13 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_friends, container, false)
 
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         this.privatePreferences =
             requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
-        this.editor = privatePreferences.edit()
         this.fusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -93,13 +89,9 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         return layout
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
     @SuppressLint("MissingPermission")
     override fun onItemClick(view: View?, position: Int) {
-        val element = this.adapter!!.getItem(position);
+        val element = this.adapter!!.getItem(position)
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Subscribe to " + element.name + " ?")
@@ -109,8 +101,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     ScrobbleRepository.apiInterface.subscribe(element.name)
-                    editor.putString("sourceScrobble", element.name)
-                    editor.commit()
+                    privatePreferences.edit().putString("sourceScrobble", element.name).apply()
 
                     withContext(Dispatchers.Main) {
                         // Set up time based timeout
@@ -137,9 +128,12 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                                     Log.d(Constants.TAG, location?.latitude.toString())
                                     Log.d(Constants.TAG, location?.longitude.toString())
 
-                                    editor.putLong("latitude", location?.latitude?.toLong() ?: 0)
-                                    editor.putLong("longitude", location?.longitude?.toLong() ?: 0)
-                                    editor.commit()
+                                    privatePreferences.edit()
+                                        .putLong("latitude", location?.latitude?.toLong() ?: 0)
+                                        .apply()
+                                    privatePreferences.edit()
+                                        .putLong("longitude", location?.longitude?.toLong() ?: 0)
+                                        .apply()
                                 }
                             }
 

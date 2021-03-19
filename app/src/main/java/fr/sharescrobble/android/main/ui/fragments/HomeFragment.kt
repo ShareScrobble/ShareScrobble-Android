@@ -34,8 +34,7 @@ import retrofit2.HttpException
 
 class HomeFragment : Fragment() {
     private lateinit var privatePreferences: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
-    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var listener: OnSharedPreferenceChangeListener
 
     private lateinit var layout: View
 
@@ -59,18 +58,17 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeUnsubscribe: Button
 
-    public var toRemoveNotification: Boolean = false
+    var toRemoveNotification: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_home, container, false)
 
         this.privatePreferences =
             requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
-        this.editor = privatePreferences.edit()
 
         this.loadingIndicator = this.layout.findViewById(R.id.homeLoading)
 
@@ -211,10 +209,12 @@ class HomeFragment : Fragment() {
             card.visibility = View.INVISIBLE
         } else {
             homeTitle.text = scrobblesData[0].lastFmData.artist.name
-            homeSubtitle.text =
-                scrobblesData[0].lastFmData.album.text + " - " + scrobblesData[0].lastFmData.name
-            homeText.text =
-                "ShareScrobbled " + DateUtils.getTimeAgo(scrobblesData[0].createdAt.time)
+            homeSubtitle.text = this.getString(
+                R.string.view_historyTitle,
+                scrobblesData[0].lastFmData.album.text,
+                scrobblesData[0].lastFmData.name
+            )
+            homeText.text = this.getString(R.string.view_historyDate, DateUtils.getTimeAgo(scrobblesData[0].createdAt.time))
 
             val imgSize = scrobblesData[0].lastFmData.image.size
             val imgLink = scrobblesData[0].lastFmData.image[imgSize - 1].text
@@ -239,10 +239,9 @@ class HomeFragment : Fragment() {
                     NotificationUtils.removeNotification(requireActivity(), 1)
 
                     // Clear data
-                    editor.remove("sourceScrobble")
-                    editor.remove("latitude")
-                    editor.remove("longitude")
-                    editor.commit()
+                    privatePreferences.edit().remove("sourceScrobble").apply()
+                    privatePreferences.edit().remove("latitude").apply()
+                    privatePreferences.edit().remove("longitude").apply()
 
                     // Clear worker
                     WorkManager.getInstance(requireActivity()).cancelAllWorkByTag("timeTimeout")

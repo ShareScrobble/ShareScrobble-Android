@@ -3,7 +3,6 @@ package fr.sharescrobble.android.network.interfaces
 import fr.sharescrobble.android.network.models.auth.AuthUrlModel
 import fr.sharescrobble.android.network.models.auth.RefreshTokenModel
 import fr.sharescrobble.android.network.models.auth.TokensModel
-import fr.sharescrobble.android.network.models.lastfm.TrackModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

@@ -1,11 +1,21 @@
 <resources>
     <string name="app_name">ShareScrobble</string>
-    <string name="title_activity_settings">Settings</string>
 
     <string name="action_home">ShareScrobble</string>
     <string name="action_friends">Friends</string>
     <string name="action_history">History</string>
     <string name="action_settings">Settings</string>
+
+    <string name="description_albumCover">Album cover</string>
+    <string name="description_userAvatar">Avatar of the user</string>
+    <string name="description_avatarUserShareScrobble">Avatar of the user you are sharescrobbling from</string>
+
+    <string name="login">Login with Last.Fm</string>
     <string name="subscribe">Start following</string>
+    <string name="unsubscribe">Stop ShareScrobbling</string>
     <string name="cancel">Cancel</string>
+    <string name="notFound">You are not sharescrobbling with anyone right now :(</string>
+
+    <string name="view_historyTitle">%1$s - %2$s</string>
+    <string name="view_historyDate">Sharescrobbled %1$s</string>
 </resources>

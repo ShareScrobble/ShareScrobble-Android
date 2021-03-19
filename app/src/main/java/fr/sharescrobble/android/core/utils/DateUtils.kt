@@ -13,7 +13,7 @@ object DateUtils {
             time *= 1000
         }
 
-        val now: Long = System.currentTimeMillis();
+        val now: Long = System.currentTimeMillis()
         if (time > now || time <= 0) {
             return null
         }
