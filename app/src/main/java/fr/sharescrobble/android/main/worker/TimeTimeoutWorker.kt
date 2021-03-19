@@ -2,6 +2,7 @@ package fr.sharescrobble.android.main.worker
 
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import fr.sharescrobble.android.MyApplication
@@ -29,8 +30,15 @@ class TimeTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
                     editor?.remove("sourceScrobble")
                     editor?.commit()
 
-                    // TODO
                     // Send a notification
+                    with(NotificationManagerCompat.from(applicationContext)) {
+                        notify(
+                            2,
+                            NotificationUtils.notificationBuilder(
+                                applicationContext
+                            )
+                        )
+                    }
                 } catch (e: Throwable) {
                     Log.e(Constants.TAG, e.toString())
                 }

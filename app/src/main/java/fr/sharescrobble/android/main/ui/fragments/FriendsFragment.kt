@@ -162,7 +162,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                         with(NotificationManagerCompat.from(requireActivity())) {
                             notify(
                                 1,
-                                NotificationUtils.persistentNotifcationBuilder(
+                                NotificationUtils.persistentNotificationBuilder(
                                     requireActivity(),
                                     element.name
                                 )

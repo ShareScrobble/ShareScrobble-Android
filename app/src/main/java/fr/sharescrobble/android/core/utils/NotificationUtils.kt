@@ -13,7 +13,7 @@ import fr.sharescrobble.android.main.ui.MainActivity
 
 
 object NotificationUtils {
-    fun persistentNotifcationBuilder(ctx: Context, sourceScrobble: String): Notification {
+    fun persistentNotificationBuilder(ctx: Context, sourceScrobble: String): Notification {
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(ctx, Constants.CHANNEL_ID)
 
@@ -33,10 +33,31 @@ object NotificationUtils {
         builder.setContentTitle("ShareScrobble is running")
         builder.setContentText("Currently sharescrobbling from " + sourceScrobble)
         builder.setSmallIcon(R.drawable.ic_launcher_foreground)
-        builder.addAction(R.drawable.ic_baseline_power_settings_new_24, "Stop ShareScrobbling", unsubscribePendingIntent)
+        builder.addAction(
+            R.drawable.ic_baseline_power_settings_new_24,
+            "Stop ShareScrobbling",
+            unsubscribePendingIntent
+        )
         builder.setContentIntent(tapIntent)
         builder.priority = NotificationCompat.PRIORITY_MAX
         builder.setOngoing(true)
+
+        return builder.build()
+    }
+
+    fun notificationBuilder(ctx: Context): Notification {
+        val builder: NotificationCompat.Builder =
+            NotificationCompat.Builder(ctx, Constants.CHANNEL_ID)
+
+        val intent = Intent(ctx, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val tapIntent: PendingIntent = PendingIntent.getActivity(ctx, 0, intent, 0)
+
+        builder.setContentTitle("ShareScrobble was stopped automatically")
+        builder.setSmallIcon(R.drawable.ic_launcher_foreground)
+        builder.setContentIntent(tapIntent)
+        builder.priority = NotificationCompat.PRIORITY_MAX
 
         return builder.build()
     }

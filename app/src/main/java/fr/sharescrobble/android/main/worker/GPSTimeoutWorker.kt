@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -66,8 +67,15 @@ class GPSTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
                             // Cancel job
                             cancel()
 
-                            // TODO
                             // Send a notification
+                            with(NotificationManagerCompat.from(applicationContext)) {
+                                notify(
+                                    2,
+                                    NotificationUtils.notificationBuilder(
+                                        applicationContext
+                                    )
+                                )
+                            }
                         } catch (e: Throwable) {
                             Log.e(Constants.TAG, e.toString())
                         }
