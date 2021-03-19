@@ -188,7 +188,7 @@ class HomeFragment : Fragment() {
             } catch (e: Throwable) {}
         }
 
-        if (scrobblesData.isEmpty() /*|| scrobblesData[0].createdAt < data.startedShared*/) {
+        if (scrobblesData.isEmpty() || scrobblesData[0].createdAt < data.startedShared) {
             card.visibility = View.INVISIBLE
         } else {
             homeTitle.text = scrobblesData[0].lastFmData.artist.name
