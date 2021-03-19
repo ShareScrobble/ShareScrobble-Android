@@ -1,5 +1,8 @@
 package fr.sharescrobble.android.main.ui.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +31,10 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 class HomeFragment : Fragment() {
+    private lateinit var privatePreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+
     private lateinit var layout: View
 
     private lateinit var loadingIndicator: LinearProgressIndicator
@@ -57,6 +64,10 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_home, container, false)
+
+        this.privatePreferences =
+            requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
+        this.editor = privatePreferences.edit()
 
         this.loadingIndicator = this.layout.findViewById(R.id.homeLoading)
 
@@ -89,16 +100,33 @@ class HomeFragment : Fragment() {
                         ScrobbleRepository.apiInterface.unsubscribe(scrobblingFromName.text.toString())
 
                         withContext(Dispatchers.Main) {
+                            editor.remove("sourceScrobble")
+                            editor.commit()
+
                             loadSScrobbleData()
                         }
                     } catch (e: HttpException) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                activity,
+                                ErrorUtils.parseError(e.response())?.message,
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
             }
         }
+
+        // Listen for sharedPreferences change (Background Worker)
+        // It should but it doesn't for some obscure reasons...
+        // See https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
+        listener = OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            Log.d(Constants.TAG, key)
+            Log.d(Constants.TAG, sharedPreferences.getString(key, "").toString())
+            if (key == "sourceScrobble") loadSScrobbleData()
+        }
+        privatePreferences.registerOnSharedPreferenceChangeListener(listener)
 
         // Load init
         this.loadSScrobbleData()
@@ -145,7 +173,11 @@ class HomeFragment : Fragment() {
 
             } catch (e: HttpException) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity,
+                        ErrorUtils.parseError(e.response())?.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -185,7 +217,8 @@ class HomeFragment : Fragment() {
                     }
                 }
 
-            } catch (e: Throwable) {}
+            } catch (e: Throwable) {
+            }
         }
 
         if (scrobblesData.isEmpty() || scrobblesData[0].createdAt < data.startedShared) {

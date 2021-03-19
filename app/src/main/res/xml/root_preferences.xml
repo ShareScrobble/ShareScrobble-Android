@@ -1,6 +1,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="ShareScrobble">
+        <CheckBoxPreference
+            android:title="Turn off automatically after a set time"
+            app:defaultValue="true"
+            app:key="autoTimeout" />
+
+        <EditTextPreference
+            android:dependency="autoTimeout"
+            android:title="Timeout delay (min)"
+            app:defaultValue="300"
+
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+
+            app:key="timeout"
+            app:useSimpleSummaryProvider="true" />
 
         <Preference
             android:icon="@drawable/ic_baseline_power_settings_new_24"

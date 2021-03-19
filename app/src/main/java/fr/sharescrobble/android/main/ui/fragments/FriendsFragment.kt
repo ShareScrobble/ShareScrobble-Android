@@ -1,5 +1,7 @@
 package fr.sharescrobble.android.main.ui.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,16 +9,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import fr.sharescrobble.android.MyApplication
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.main.adapter.FriendsAdapter
 import fr.sharescrobble.android.main.ui.MainActivity
+import fr.sharescrobble.android.main.worker.TimeTimeoutWorker
 import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
 import fr.sharescrobble.android.network.repositories.ScrobbleRepository
@@ -25,9 +33,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
 
 class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var privatePreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+
     private lateinit var layout: View
 
     private lateinit var loadingIndicator: LinearProgressIndicator
@@ -42,6 +55,11 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
     ): View? {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_friends, container, false)
+
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        this.privatePreferences =
+            requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
+        this.editor = privatePreferences.edit()
 
         this.loadingIndicator = this.layout.findViewById(R.id.rvFriendsLoading)
 
@@ -65,6 +83,10 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         return layout
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
     override fun onItemClick(view: View?, position: Int) {
         val element = this.adapter!!.getItem(position);
 
@@ -76,8 +98,27 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     ScrobbleRepository.apiInterface.subscribe(element.name)
+                    editor.putString("sourceScrobble", element.name)
+                    editor.commit()
 
                     withContext(Dispatchers.Main) {
+                        // Set up time based timeout
+                        if (sharedPreferences.getBoolean("autoTimeout", false)) {
+                            val timeout = sharedPreferences.getInt("timeout", 300)
+
+                            val workRequest =
+                                OneTimeWorkRequestBuilder<TimeTimeoutWorker>().setInitialDelay(
+                                    timeout.toLong(),
+                                    TimeUnit.MINUTES
+                                ).build()
+                            WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                                "timeTimeout",
+                                ExistingWorkPolicy.REPLACE,
+                                workRequest
+                            )
+                        }
+
+                        // Redirect to home
                         dialog.dismiss()
                         val parent: MainActivity = activity as MainActivity
                         parent.navigateTo(R.id.action_home)
@@ -85,7 +126,11 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
 
                 } catch (e: HttpException) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            activity,
+                            ErrorUtils.parseError(e.response())?.message,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -118,7 +163,11 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
 
             } catch (e: HttpException) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity,
+                        ErrorUtils.parseError(e.response())?.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
