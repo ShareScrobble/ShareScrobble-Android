@@ -58,7 +58,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateMainFragment(id: Int): Boolean {
+    fun navigateTo(id: Int) {
+        bottomNavigationView.selectedItemId = id
+    }
+
+    private fun updateMainFragment(id: Int,): Boolean {
+
         when (id) {
             R.id.action_home -> {
                 Log.d(Constants.TAG, "Clicked home")
