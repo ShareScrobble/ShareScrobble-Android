@@ -16,6 +16,15 @@
     <string name="cancel">Cancel</string>
     <string name="notFound">You are not sharescrobbling with anyone right now :(</string>
 
-    <string name="view_historyTitle">%1$s - %2$s</string>
+    <string name="view_historyTitle" translatable="false">%1$s - %2$s</string>
     <string name="view_historyDate">Sharescrobbled %1$s</string>
+
+    <string name="alert_friendsSubscribeToBeg">Subscribe to </string>
+    <string name="alert_friendsSubscribeToEnd">\?</string>
+
+    <string name="preferences_enableTimeout">Turn off automatically after a set time</string>
+    <string name="preferences_timeoutDelay">Timeout delay (min)</string>
+    <string name="preferences_logout">Logout</string>
+    <string name="preferences_gpsRange">GPS Range</string>
+    <string name="preferences_enableGps">Turn off automatically after being too far away from the source of music (using GPS)</string>
 </resources>

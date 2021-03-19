@@ -48,7 +48,6 @@
                         android:layout_height="wrap_content"
                         android:text="@string/notFound"
                         android:padding="16dp"
-
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
                         android:textAppearance="?attr/textAppearanceBody2"
