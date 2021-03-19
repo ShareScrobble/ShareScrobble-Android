@@ -20,8 +20,6 @@ class AuthActivity : AppCompatActivity() {
         button.setOnClickListener {
             run {
                 AuthService.login()
-
-                return@run
             }
         }
 

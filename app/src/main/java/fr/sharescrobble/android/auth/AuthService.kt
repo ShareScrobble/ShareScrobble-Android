@@ -3,30 +3,31 @@ package fr.sharescrobble.android.auth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Browser
 import android.util.Log
 import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat.startActivity
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import fr.sharescrobble.android.MyApplication
-import fr.sharescrobble.android.auth.ui.AuthActivity
-import fr.sharescrobble.android.network.models.auth.AuthUrlModel
-import fr.sharescrobble.android.network.models.auth.TokensModel
-import fr.sharescrobble.android.network.models.auth.JwtModel
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.main.ui.MainActivity
+import fr.sharescrobble.android.network.models.auth.AuthUrlModel
+import fr.sharescrobble.android.network.models.auth.JwtModel
+import fr.sharescrobble.android.network.models.auth.TokensModel
 import fr.sharescrobble.android.network.repositories.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 import java.nio.charset.StandardCharsets
 import java.util.*
+
 
 object AuthService {
     private val sharedPreferences =
@@ -60,10 +61,11 @@ object AuthService {
 
                 Log.d(Constants.TAG, body.toString())
 
-                // Open intent
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(body.url))
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(MyApplication.getCtx(), intent, null)
+                // Open Custom Tab
+                val builder = CustomTabsIntent.Builder()
+                val customTabsIntent = builder.build()
+                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                customTabsIntent.launchUrl(MyApplication.getCtx(), Uri.parse(body.url))
             }
 
             override fun onFailure(call: Call<AuthUrlModel>, t: Throwable) {
@@ -71,7 +73,11 @@ object AuthService {
                 Log.e(Constants.TAG, t.toString())
 
                 if (t is HttpException) {
-                    Toast.makeText(MyApplication.getCtx(), ErrorUtils.parseError(t.response())?.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        MyApplication.getCtx(),
+                        ErrorUtils.parseError(t.response())?.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         })
@@ -147,7 +153,8 @@ object AuthService {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 AuthRepository.apiInterface.revokeToken(refreshToken ?: "")
-            } catch (e: Throwable) {}
+            } catch (e: Throwable) {
+            }
         }
 
         this.currentJwtUser = null
