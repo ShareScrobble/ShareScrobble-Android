@@ -44,6 +44,13 @@ class MainActivity : AppCompatActivity() {
         mainFrame = findViewById(R.id.main_frame)
         bottomNavigationView = findViewById(R.id.main_bottom_navigation)
 
+        val intent = intent
+        when (intent.action) {
+            "UNSUBSCRIBE" -> {
+                homeFragment.toRemoveNotification = true
+            }
+        }
+
         fm.beginTransaction().add(R.id.main_frame, settingsFragment).hide(settingsFragment).commit()
         fm.beginTransaction().add(R.id.main_frame, historyFragment).hide(historyFragment).commit()
         fm.beginTransaction().add(R.id.main_frame, friendsFragment).hide(friendsFragment).commit()
@@ -62,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.selectedItemId = id
     }
 
-    private fun updateMainFragment(id: Int,): Boolean {
+    private fun updateMainFragment(id: Int): Boolean {
 
         when (id) {
             R.id.action_home -> {

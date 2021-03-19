@@ -19,6 +19,7 @@ import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.DateUtils
 import fr.sharescrobble.android.core.utils.ErrorUtils
+import fr.sharescrobble.android.core.utils.NotificationUtils
 import fr.sharescrobble.android.network.models.users.UserModel
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
@@ -44,7 +45,6 @@ class HomeFragment : Fragment() {
     private lateinit var homeFound: RelativeLayout
 
     // Not found
-
     // Found
     private lateinit var cardScrobble: CardView
     private lateinit var scrobblingFromName: TextView
@@ -57,6 +57,8 @@ class HomeFragment : Fragment() {
     private lateinit var homeCover: ImageView
 
     private lateinit var homeUnsubscribe: Button
+
+    public var toRemoveNotification: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -95,26 +97,7 @@ class HomeFragment : Fragment() {
         // Set up the Button
         homeUnsubscribe.setOnClickListener {
             run {
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        ScrobbleRepository.apiInterface.unsubscribe(scrobblingFromName.text.toString())
-
-                        withContext(Dispatchers.Main) {
-                            editor.remove("sourceScrobble")
-                            editor.commit()
-
-                            loadSScrobbleData()
-                        }
-                    } catch (e: HttpException) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                activity,
-                                ErrorUtils.parseError(e.response())?.message,
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
+                this.unsubscribe()
             }
         }
 
@@ -127,6 +110,10 @@ class HomeFragment : Fragment() {
             if (key == "sourceScrobble") loadSScrobbleData()
         }
         privatePreferences.registerOnSharedPreferenceChangeListener(listener)
+
+        if (this.toRemoveNotification) {
+            this.unsubscribe(privatePreferences.getString("sourceScrobble", null))
+        }
 
         // Load init
         this.loadSScrobbleData()
@@ -238,6 +225,33 @@ class HomeFragment : Fragment() {
             } else {
                 picasso.load(imgLink).placeholder(R.drawable.placeholder)
                     .into(homeCover)
+            }
+        }
+    }
+
+    private fun unsubscribe(name: String? = null) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                ScrobbleRepository.apiInterface.unsubscribe(
+                    name ?: scrobblingFromName.text.toString()
+                )
+
+                withContext(Dispatchers.Main) {
+                    NotificationUtils.removeNotification(requireActivity(), 1)
+
+                    editor.remove("sourceScrobble")
+                    editor.commit()
+
+                    loadSScrobbleData()
+                }
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        activity,
+                        ErrorUtils.parseError(e.response())?.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }

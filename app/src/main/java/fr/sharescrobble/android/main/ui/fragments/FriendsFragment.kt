@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,6 +23,7 @@ import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.ErrorUtils
+import fr.sharescrobble.android.core.utils.NotificationUtils
 import fr.sharescrobble.android.main.adapter.FriendsAdapter
 import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.main.worker.TimeTimeoutWorker
@@ -115,6 +117,17 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                                 "timeTimeout",
                                 ExistingWorkPolicy.REPLACE,
                                 workRequest
+                            )
+                        }
+
+                        // Show a persistent notification
+                        with(NotificationManagerCompat.from(requireActivity())) {
+                            notify(
+                                1,
+                                NotificationUtils.persistentNotifcationBuilder(
+                                    requireActivity(),
+                                    element.name
+                                )
                             )
                         }
 
