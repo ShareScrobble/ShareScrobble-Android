@@ -15,6 +15,7 @@ import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.DateUtils
+import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.network.models.users.UserModel
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
@@ -24,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 class HomeFragment : Fragment() {
     private lateinit var layout: View
@@ -89,8 +91,10 @@ class HomeFragment : Fragment() {
                         withContext(Dispatchers.Main) {
                             loadSScrobbleData()
                         }
-                    } catch (e: Throwable) {
-                        TODO("Handle API errors")
+                    } catch (e: HttpException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
@@ -139,8 +143,10 @@ class HomeFragment : Fragment() {
                     homeSwipeContainer.isRefreshing = false
                 }
 
-            } catch (e: Throwable) {
-                TODO("Handle API errors")
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

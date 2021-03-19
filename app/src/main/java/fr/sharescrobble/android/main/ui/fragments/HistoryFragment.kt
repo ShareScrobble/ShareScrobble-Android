@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -13,6 +14,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.main.adapter.HistoryAdapter
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 import fr.sharescrobble.android.network.repositories.UsersRepository
@@ -78,8 +80,10 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
                     createOrPopulateRecyclerView(data)
                 }
 
-            } catch (e: Throwable) {
-                TODO("Handle API errors")
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

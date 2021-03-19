@@ -1,10 +1,10 @@
 package fr.sharescrobble.android.main.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,6 +14,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
 import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.main.adapter.FriendsAdapter
 import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
@@ -83,8 +84,9 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                     }
 
                 } catch (e: HttpException) {
-                    Log.d(Constants.TAG, e.toString())
-                    TODO("Handle API errors")
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -114,8 +116,10 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                     createRecyclerView(data)
                 }
 
-            } catch (e: Throwable) {
-                TODO("Handle API errors")
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

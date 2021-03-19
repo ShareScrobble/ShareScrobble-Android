@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
@@ -13,13 +14,16 @@ import fr.sharescrobble.android.network.models.auth.AuthUrlModel
 import fr.sharescrobble.android.network.models.auth.TokensModel
 import fr.sharescrobble.android.network.models.auth.JwtModel
 import fr.sharescrobble.android.core.Constants
+import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.network.repositories.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -64,8 +68,11 @@ object AuthService {
 
             override fun onFailure(call: Call<AuthUrlModel>, t: Throwable) {
                 // Display an error message
-                Log.e(Constants.TAG, t.toString());
-                TODO("Not yet implemented")
+                Log.e(Constants.TAG, t.toString())
+
+                if (t is HttpException) {
+                    Toast.makeText(MyApplication.getCtx(), ErrorUtils.parseError(t.response())?.message, Toast.LENGTH_LONG).show()
+                }
             }
         })
     }
@@ -83,7 +90,7 @@ object AuthService {
         refreshToken = tokensResponse.refreshToken
 
         if (accessToken == null || refreshToken == null) {
-            TODO("Error here")
+            throw Error("Failed to decode the JWT")
         }
 
         this.decodeJWT()

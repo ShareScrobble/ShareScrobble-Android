@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                 activeFragment = settingsFragment
             }
             else -> {
-                TODO("WTF")
                 return false
             }
         }
