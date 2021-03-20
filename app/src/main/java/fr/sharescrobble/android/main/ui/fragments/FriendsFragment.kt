@@ -111,7 +111,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
                     withContext(Dispatchers.Main) {
                         // Set up time based timeout
                         if (sharedPreferences.getBoolean("autoTimeout", false)) {
-                            val timeout = sharedPreferences.getInt("timeout", 300)
+                            val timeout = Integer.parseInt(sharedPreferences.getString("timeout", "300")!!, 10)
 
                             val workRequest =
                                 OneTimeWorkRequestBuilder<TimeTimeoutWorker>().setInitialDelay(

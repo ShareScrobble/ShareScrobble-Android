@@ -36,7 +36,7 @@ class GPSTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
     override fun doWork(): Result {
         // Query source & source location
         val sourceScrobble = privatePreferences.getString("sourceScrobble", null)
-        val maxDistance = sharedPreferences.getInt("gpsRange", 50)
+        val maxDistance = Integer.parseInt(sharedPreferences.getString("gpsRange", "50")!!, 10)
         val latitude = privatePreferences.getLong("latitude", 0)
         val longitude = privatePreferences.getLong("longitude", 0)
 

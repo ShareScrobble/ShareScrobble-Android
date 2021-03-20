@@ -34,6 +34,10 @@
             android:dependency="gpsTimeout"
             android:title="@string/preferences_gpsRange"
             app:defaultValue="50"
+
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+
             app:key="gpsRange"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
