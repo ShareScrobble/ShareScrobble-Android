@@ -1,0 +1,44 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="ShareScrobble">
+        <CheckBoxPreference
+            android:title="@string/preferences_enableTimeout"
+            app:defaultValue="true"
+            app:key="autoTimeout" />
+
+        <EditTextPreference
+            android:dependency="autoTimeout"
+            android:title="@string/preferences_timeoutDelay"
+            app:defaultValue="300"
+
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+
+            app:key="timeout"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:icon="@drawable/ic_baseline_power_settings_new_24"
+            android:title="@string/preferences_logout"
+            app:key="logout" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="GPS">
+        <CheckBoxPreference
+            android:title="@string/preferences_enableGps"
+            app:defaultValue="false"
+            app:key="gpsTimeout" />
+
+        <EditTextPreference
+            android:dependency="gpsTimeout"
+            android:title="@string/preferences_gpsRange"
+            app:defaultValue="50"
+
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+
+            app:key="gpsRange"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+</PreferenceScreen>
