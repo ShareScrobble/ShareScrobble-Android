@@ -98,7 +98,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         val element = this.adapter!!.getItem(position)
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
-        builder.setTitle(getString(R.string.alert_friendsSubscribeToBeg) + element.name + getString(R.string.alert_friendsSubscribeToEnd))
+        builder.setTitle(getString(R.string.alert_friendsSubscribeTo, element.name))
         builder.setPositiveButton(
             R.string.subscribe
         ) { dialog, _ ->

@@ -52,7 +52,16 @@
                         android:layout_centerVertical="true"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:textAlignment="center"
+                        android:id="@+id/notShareScrobbling"
                         />
+
+                    <Button
+                        android:id="@+id/goToFriends"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/goToFriends"
+                        android:layout_below="@id/notShareScrobbling"
+                        android:layout_centerHorizontal="true" />
                 </RelativeLayout>
 
                 <RelativeLayout

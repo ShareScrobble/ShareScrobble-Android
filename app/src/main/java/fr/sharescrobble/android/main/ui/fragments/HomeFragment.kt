@@ -21,6 +21,7 @@ import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.DateUtils
 import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.core.utils.NotificationUtils
+import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.network.models.users.UserModel
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
@@ -45,6 +46,10 @@ class HomeFragment : Fragment() {
     private lateinit var homeSwipeContainer: SwipeRefreshLayout
     private lateinit var homeNotFound: RelativeLayout
     private lateinit var homeFound: RelativeLayout
+
+    // Not found
+    private lateinit var goToFriends: Button
+
     // Found
     private lateinit var cardScrobble: CardView
     private lateinit var scrobblingFromName: TextView
@@ -74,6 +79,8 @@ class HomeFragment : Fragment() {
         this.loadingIndicator = this.layout.findViewById(R.id.homeLoading)
 
         // UI References queries
+        goToFriends = layout.findViewById(R.id.goToFriends)
+
         cardScrobble = layout.findViewById(R.id.cardScrobble)
         scrobblingFromName = layout.findViewById(R.id.scrobblingFromName)
         imageUser = layout.findViewById(R.id.imageUser)
@@ -98,6 +105,13 @@ class HomeFragment : Fragment() {
         homeUnsubscribe.setOnClickListener {
             run {
                 this.unsubscribe()
+            }
+        }
+
+        goToFriends.setOnClickListener {
+            run {
+                val parent: MainActivity = activity as MainActivity
+                parent.navigateTo(R.id.action_friends)
             }
         }
 
