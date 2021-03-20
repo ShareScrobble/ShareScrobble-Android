@@ -8,7 +8,7 @@
     <string name="subscribe">Commencer la synchronisation</string>
     <string name="cancel">Annuler</string>
     <string name="login">Se connecter avec Last.Fm</string>
-    <string name="notFound">Vous n\'ëtes pas en train de ShareScrobbler maintenant ):</string>
+    <string name="notFound">Vous n\'êtes pas actuellement en train de ShareScrobbler</string>
     <string name="unsubscribe">Arrêter le ShareScrobbling</string>
     <string name="description_albumCover">Couverture d\'album</string>
     <string name="preferences_timeoutDelay">Délai d\'expiration</string>
@@ -16,9 +16,12 @@
     <string name="preferences_gpsRange">Rayon GPS</string>
     <string name="preferences_enableGps">Arrêter automatiquement la synchronisation lorsque vous vous éloignez du point de lancement (via GPS)</string>
     <string name="view_historyDate">ShareScrobblé %1$s</string>
-    <string name="alert_friendsSubscribeToBeg">"ShareScrobbler "</string>
-    <string name="alert_friendsSubscribeToEnd">\?</string>
+    <string name="alert_friendsSubscribeTo">ShareScrobbler avec %1$s?</string>
     <string name="preferences_enableTimeout">Arrêter automatiquement la synchronisation après un temps donné</string>
     <string name="description_userAvatar">Avatar de l\'utilisateur</string>
     <string name="description_avatarUserShareScrobble">Avatar de l\'utilisateur que vous sharescrobblez</string>
+    <string name="permanent_notification_running">ShareScrobble en cours</string>
+    <string name="permanent_notification_running_from">En train de ShareScrobbler depuis %1$s</string>
+    <string name="permanent_notification_button_stop">Arrêter de ShareScrobbler</string>
+    <string name="goToFriends">ShareScrobbler depuis un ami</string>
 </resources>

@@ -57,6 +57,7 @@ class HomeFragment : Fragment() {
     private lateinit var homeCover: ImageView
 
     private lateinit var homeUnsubscribe: Button
+    private lateinit var goToFriends: Button
 
     var toRemoveNotification: Boolean = false
 
@@ -85,6 +86,7 @@ class HomeFragment : Fragment() {
         homeCover = layout.findViewById(R.id.homeCover)
 
         homeUnsubscribe = layout.findViewById(R.id.homeUnsubscribe)
+        goToFriends = layout.findViewById(R.id.goToFriends)
 
         // Set up the pull to refresh
         this.homeSwipeContainer = this.layout.findViewById(R.id.homeSwipeContainer)
@@ -98,6 +100,11 @@ class HomeFragment : Fragment() {
         homeUnsubscribe.setOnClickListener {
             run {
                 this.unsubscribe()
+            }
+        }
+
+        goToFriends.setOnClickListener {
+            run {
             }
         }
 
