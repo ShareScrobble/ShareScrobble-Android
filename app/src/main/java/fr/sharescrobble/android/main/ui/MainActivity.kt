@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.auth.AuthService
@@ -84,26 +85,25 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
      * Update the displayed Fragment using its [id]
      */
     private fun updateMainFragment(id: Int): Boolean {
-
         when (id) {
             R.id.action_home -> {
                 Log.d(Constants.TAG, "Clicked home")
-                fm.beginTransaction().hide(activeFragment).show(homeFragment).commit()
+                this.hideAll().show(homeFragment).commit()
                 activeFragment = homeFragment
             }
             R.id.action_friends -> {
                 Log.d(Constants.TAG, "Clicked friends")
-                fm.beginTransaction().hide(activeFragment).show(friendsFragment).commit()
+                this.hideAll().show(friendsFragment).commit()
                 activeFragment = friendsFragment
             }
             R.id.action_history -> {
                 Log.d(Constants.TAG, "Clicked history")
-                fm.beginTransaction().hide(activeFragment).show(historyFragment).commit()
+                this.hideAll().show(historyFragment).commit()
                 activeFragment = historyFragment
             }
             R.id.action_settings -> {
                 Log.d(Constants.TAG, "Clicked settings")
-                fm.beginTransaction().hide(activeFragment).show(settingsFragment).commit()
+                this.hideAll().show(settingsFragment).commit()
                 activeFragment = settingsFragment
             }
             else -> {
@@ -112,6 +112,14 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         }
 
         return true
+    }
+
+    /**
+     * Dirty fix to prevent ghost fragments
+     * TODO: Improve or move on to a better fragment management
+     */
+    private fun hideAll(): FragmentTransaction {
+        return fm.beginTransaction().hide(homeFragment).hide(friendsFragment).hide(historyFragment).hide(settingsFragment)
     }
 
     /**
