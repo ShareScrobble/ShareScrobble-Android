@@ -1,5 +1,7 @@
 package fr.sharescrobble.android.main.ui.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,6 +27,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
+    // References
+    private lateinit var privatePreferences: SharedPreferences
+
     // UI References
     private lateinit var layout: View
 
@@ -41,6 +46,10 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_history, container, false)
 
+        // References queries
+        this.privatePreferences =
+            requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
+
         // UI References queries
         this.loadingIndicator = this.layout.findViewById(R.id.rvHistoryLoading)
 
@@ -51,12 +60,26 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
         // Set up the RecyclerView
         this.recyclerView = layout.findViewById(R.id.rvHistory)
         this.recyclerView.layoutManager =
-            GridLayoutManager(activity, Constants.NB_COLUMNS_HISTORY, GridLayoutManager.VERTICAL, false)
+            GridLayoutManager(
+                activity,
+                Constants.NB_COLUMNS_HISTORY,
+                GridLayoutManager.VERTICAL,
+                false
+            )
 
         // Load data once
         this.getHistory(true)
 
         return this.layout
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        // Only refresh if we are sharescrobbling
+        if (!hidden && privatePreferences.getString("sourceScrobble", null) != null) {
+            this.getHistory()
+        }
     }
 
     override fun onItemClick(view: View?, position: Int) {
@@ -89,7 +112,11 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
 
             } catch (e: HttpException) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(activity, ErrorUtils.parseError(e.response())?.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity,
+                        ErrorUtils.parseError(e.response())?.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
