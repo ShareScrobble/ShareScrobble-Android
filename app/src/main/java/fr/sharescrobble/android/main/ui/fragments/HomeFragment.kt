@@ -21,6 +21,7 @@ import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.utils.DateUtils
 import fr.sharescrobble.android.core.utils.ErrorUtils
 import fr.sharescrobble.android.core.utils.NotificationUtils
+import fr.sharescrobble.android.main.ui.MainActivity
 import fr.sharescrobble.android.network.models.users.UserModel
 import fr.sharescrobble.android.network.models.users.UserScrobbleModel
 import fr.sharescrobble.android.network.repositories.LastfmRepository
@@ -45,6 +46,10 @@ class HomeFragment : Fragment() {
     private lateinit var homeSwipeContainer: SwipeRefreshLayout
     private lateinit var homeNotFound: RelativeLayout
     private lateinit var homeFound: RelativeLayout
+
+    // Not found
+    private lateinit var goToFriends: Button
+
     // Found
     private lateinit var cardScrobble: CardView
     private lateinit var scrobblingFromName: TextView
@@ -57,7 +62,6 @@ class HomeFragment : Fragment() {
     private lateinit var homeCover: ImageView
 
     private lateinit var homeUnsubscribe: Button
-    private lateinit var goToFriends: Button
 
     var toRemoveNotification: Boolean = false
 
@@ -75,6 +79,8 @@ class HomeFragment : Fragment() {
         this.loadingIndicator = this.layout.findViewById(R.id.homeLoading)
 
         // UI References queries
+        goToFriends = layout.findViewById(R.id.goToFriends)
+
         cardScrobble = layout.findViewById(R.id.cardScrobble)
         scrobblingFromName = layout.findViewById(R.id.scrobblingFromName)
         imageUser = layout.findViewById(R.id.imageUser)
@@ -86,7 +92,6 @@ class HomeFragment : Fragment() {
         homeCover = layout.findViewById(R.id.homeCover)
 
         homeUnsubscribe = layout.findViewById(R.id.homeUnsubscribe)
-        goToFriends = layout.findViewById(R.id.goToFriends)
 
         // Set up the pull to refresh
         this.homeSwipeContainer = this.layout.findViewById(R.id.homeSwipeContainer)
@@ -105,6 +110,8 @@ class HomeFragment : Fragment() {
 
         goToFriends.setOnClickListener {
             run {
+                val parent: MainActivity = activity as MainActivity
+                parent.navigateTo(R.id.action_friends)
             }
         }
 
