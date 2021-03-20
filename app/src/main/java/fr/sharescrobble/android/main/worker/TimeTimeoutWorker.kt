@@ -15,17 +15,24 @@ import kotlinx.coroutines.launch
 
 class TimeTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
+    // References
     private val privatePreferences =
         MyApplication.getCtx().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
     private val editor = privatePreferences?.edit()
 
+    /**
+     * Goal: Automatically stop sharescrobbling after a given time
+     */
     override fun doWork(): Result {
+        // Get the source
         val sourceScrobble = privatePreferences.getString("sourceScrobble", null)
 
         if (sourceScrobble != null) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    // Unsubscribe
                     ScrobbleRepository.apiInterface.unsubscribe(sourceScrobble)
+                    // Clean up
                     NotificationUtils.removeNotification(MyApplication.getCtx(), 1)
                     editor?.remove("sourceScrobble")
                     editor?.commit()

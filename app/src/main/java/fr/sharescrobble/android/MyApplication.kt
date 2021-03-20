@@ -6,9 +6,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import fr.sharescrobble.android.core.Constants
 import fr.sharescrobble.android.core.Constants.CHANNEL_ID
 
 class MyApplication : Application() {
+    /**
+     * Get a hold of Application's Context
+     */
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var ctx: Context? = null
@@ -24,11 +28,14 @@ class MyApplication : Application() {
         this.createNotificationChannel()
     }
 
+    /**
+     * Initialize the notification channel
+     */
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = CHANNEL_ID
+            val name = Constants.NAME
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
             }

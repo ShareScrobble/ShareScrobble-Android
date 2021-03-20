@@ -21,6 +21,7 @@ import fr.sharescrobble.android.main.ui.fragments.SettingsFragment
 class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
     private val fm: FragmentManager = supportFragmentManager
 
+    // UI References
     private lateinit var mainFrame: FrameLayout
     private lateinit var bottomNavigationView: BottomNavigationView
 
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Security check
         if (!AuthService.isAuthenticated()) {
             val intent = Intent(this, AuthActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             return
         }
 
+        // UI references queries
         mainFrame = findViewById(R.id.main_frame)
         bottomNavigationView = findViewById(R.id.main_bottom_navigation)
 
@@ -52,6 +55,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             }
         }
 
+        // Setup bottom navigation
         fm.beginTransaction().add(R.id.main_frame, settingsFragment).hide(settingsFragment).commit()
         fm.beginTransaction().add(R.id.main_frame, historyFragment).hide(historyFragment).commit()
         fm.beginTransaction().add(R.id.main_frame, friendsFragment).hide(friendsFragment).commit()
@@ -60,16 +64,25 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         this.configureBottomMenu()
     }
 
+    /**
+     * Configure the [BottomNavigationView]
+     */
     private fun configureBottomMenu() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             updateMainFragment(item.itemId)
         }
     }
 
+    /**
+     * Navigation done programmatically using [id]
+     */
     fun navigateTo(id: Int) {
         bottomNavigationView.selectedItemId = id
     }
 
+    /**
+     * Update the displayed Fragment using its [id]
+     */
     private fun updateMainFragment(id: Int): Boolean {
 
         when (id) {
@@ -101,6 +114,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         return true
     }
 
+    /**
+     * Forward the onRequestPermissionsResult to the activity
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

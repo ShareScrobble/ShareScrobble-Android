@@ -42,10 +42,12 @@ import java.util.concurrent.TimeUnit
 
 
 class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
+    // References
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var privatePreferences: SharedPreferences
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    // UI References
     private lateinit var layout: View
 
     private lateinit var loadingIndicator: LinearProgressIndicator
@@ -61,12 +63,14 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_friends, container, false)
 
+        // References queries
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         this.privatePreferences =
             requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
         this.fusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        // UI References queries
         this.loadingIndicator = this.layout.findViewById(R.id.rvFriendsLoading)
 
         // Set up the pull to refresh
@@ -100,6 +104,7 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         ) { dialog, _ ->
             CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    // API persistence
                     ScrobbleRepository.apiInterface.subscribe(element.name)
                     privatePreferences.edit().putString("sourceScrobble", element.name).apply()
 
@@ -191,6 +196,9 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         dialog.show()
     }
 
+    /**
+     * Load friends from API. Enable or not a [progress] bar
+     */
     private fun getFriends(progress: Boolean = true) {
         if (progress) {
             // Display loading
@@ -218,6 +226,9 @@ class FriendsFragment : Fragment(), FriendsAdapter.ItemClickListener {
         }
     }
 
+    /**
+     * Setup the RecyclerView
+     */
     private fun createRecyclerView(data: Array<UserFriendModel>) {
         if (this.adapter == null) {
             this.adapter = FriendsAdapter(activity, data)

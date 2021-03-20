@@ -13,6 +13,9 @@ class ApiClient {
     companion object {
         private var retrofit: Retrofit? = null
 
+        /**
+         * Setup the [ApiClient]
+         */
         fun getApiClient(): Retrofit {
             val gson = GsonBuilder().setLenient().create()
             val dispatcher = Dispatcher()

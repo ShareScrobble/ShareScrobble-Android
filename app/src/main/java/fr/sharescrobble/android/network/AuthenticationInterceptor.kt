@@ -31,6 +31,7 @@ class AuthenticationInterceptor : Interceptor {
 
             Log.d(Constants.TAG, "Added a token " + AuthService.accessToken)
 
+            // Clone and add header
             val originalHttpUrl = original.url()
             val requestBuilder = original.newBuilder()
                 .addHeader("Authorization", "Bearer " + AuthService.accessToken)
@@ -41,7 +42,7 @@ class AuthenticationInterceptor : Interceptor {
             val initialResponse = chain.proceed(request)
 
             when {
-                /*initialResponse.code() == 403 || */initialResponse.code() == 401 -> {
+                initialResponse.code() == 401 -> {
                 Log.d(Constants.TAG, "Need to refresh")
                 Log.d(Constants.TAG, AuthService.refreshToken.toString())
 
@@ -64,7 +65,7 @@ class AuthenticationInterceptor : Interceptor {
 
                 Log.d(Constants.TAG, "Added a new token " + AuthService.accessToken)
 
-                // Add it to the request
+                // Add it to the request & retry
                 return chain.proceed(
                     original.newBuilder()
                         .header("Authorization", "Bearer " + AuthService.accessToken)

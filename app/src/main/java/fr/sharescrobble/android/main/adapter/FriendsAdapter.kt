@@ -1,6 +1,5 @@
 package fr.sharescrobble.android.main.adapter
 
-
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +11,9 @@ import com.squareup.picasso.Picasso
 import fr.sharescrobble.android.R
 import fr.sharescrobble.android.network.models.lastfm.UserFriendModel
 
-
 class FriendsAdapter internal constructor(context: Context?, data: Array<UserFriendModel>) :
     RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
+    // References
     private var mData: MutableList<UserFriendModel> = data.toMutableList()
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null

@@ -24,6 +24,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     override fun onPreferenceTreeClick(preference: Preference?): Boolean {
         when (preference!!.key) {
             "logout" -> {
+                // Logout from the API and the App
                 AuthService.logout()
                 val intent = Intent(activity, AuthActivity::class.java)
                 intent.flags =
@@ -91,6 +92,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
             }
 
             else -> {
+                // Do nothing outside of base implementation
                 return super.onPreferenceTreeClick(preference)
             }
         }

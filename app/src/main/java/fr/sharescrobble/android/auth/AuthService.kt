@@ -51,6 +51,9 @@ object AuthService {
         }
     }
 
+    /**
+     * First part of the OAuth2.0 Login
+     */
     fun login() {
         // Query the URL to open
         AuthRepository.apiInterface.getAuthUrl().enqueue(object : Callback<AuthUrlModel> {
@@ -81,9 +84,12 @@ object AuthService {
         })
     }
 
-    fun loginCallback(ctx: Context, toString: String) {
+    /**
+     * Callback of OAuth2.0 Login in a given [ctx] with an encoded [data]
+     */
+    fun loginCallback(ctx: Context, data: String) {
         // Get base64 token
-        val token = toString.replace("sscrobble://auth/", "")
+        val token = data.replace("sscrobble://auth/", "")
 
         // Decode it & store it
         Log.d(Constants.TAG, token)
@@ -97,18 +103,23 @@ object AuthService {
             throw Error("Failed to decode the JWT")
         }
 
+        // Decode and store data
         this.decodeJWT()
         this.storeCredentials(accessToken, refreshToken)
 
         Log.d(Constants.TAG, accessToken.toString())
         Log.d(Constants.TAG, currentJwtUser.toString())
 
+        // Redirect to Main
         val intent = Intent(ctx, MainActivity::class.java)
         ctx.startActivity(intent)
 
         return
     }
 
+    /**
+     * Store the tokens ([accessToken] and [refreshToken])
+     */
     fun storeCredentials(accessToken: String?, refreshToken: String?) {
         // Persist to memory
         editor.putString("accessToken", accessToken)
@@ -119,6 +130,9 @@ object AuthService {
         this.refreshToken = refreshToken ?: ""
     }
 
+    /**
+     * Restore from persistent memory
+     */
     private fun restoreCredentials() {
         this.storeCredentials(
             sharedPreferences.getString("accessToken", null),
@@ -129,10 +143,16 @@ object AuthService {
         refreshToken = sharedPreferences.getString("refreshToken", null)
     }
 
+    /**
+     * Clear saved credentials (persistent and in memory)
+     */
     private fun clearCredentials() {
         this.storeCredentials(null, null)
     }
 
+    /**
+     * Decode a JWT to store it into [currentJwtUser]
+     */
     private fun decodeJWT() {
         if (accessToken != null) {
             // Parse & store the JWT
@@ -146,6 +166,9 @@ object AuthService {
         }
     }
 
+    /**
+     * Logout routine
+     */
     fun logout() {
         // Clean-up the refresh token (and ignore API error)
         CoroutineScope(Dispatchers.IO).launch {
@@ -160,6 +183,9 @@ object AuthService {
         this.clearCredentials()
     }
 
+    /**
+     * Is the User currently authenticated
+     */
     fun isAuthenticated(): Boolean {
         return this.currentJwtUser != null
     }

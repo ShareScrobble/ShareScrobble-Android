@@ -9,6 +9,9 @@ import java.io.IOException
 
 
 object ErrorUtils {
+    /**
+     * Deserialize API HTTP errors [response] and return a [ErrorModel]
+     */
     fun parseError(response: Response<*>?): ErrorModel? {
         val converter: Converter<ResponseBody, ErrorModel> = ApiClient.getApiClient()
             .responseBodyConverter(ErrorModel::class.java, arrayOfNulls<Annotation>(0))

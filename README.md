@@ -9,7 +9,7 @@ git clone git@github.com:ShareScrobble/ShareScrobble-Android.git
 ```
 
 ## Maintainers
-This project is mantained by:
+This project is maintained by:
 * [Roguyt](http://github.com/roguyt)
 * [Gabriel Dugny](https://github.com/gabdug)
 

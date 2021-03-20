@@ -10,12 +10,14 @@ import fr.sharescrobble.android.core.Constants
 
 
 class AuthActivity : AppCompatActivity() {
+    // UI references
     private lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
+        // Get references & add listeners
         button = this.findViewById(R.id.buttonLogin)
         button.setOnClickListener {
             run {
@@ -23,6 +25,7 @@ class AuthActivity : AppCompatActivity() {
             }
         }
 
+        // Process intent data if any
         val base64Token = intent.dataString
         if (base64Token != null) {
             Log.d(Constants.TAG, base64Token.toString())

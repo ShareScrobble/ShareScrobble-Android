@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class GPSTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
+    // References
     private var sharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext)
     private val privatePreferences =
         MyApplication.getCtx().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
@@ -29,7 +30,11 @@ class GPSTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
         LocationServices.getFusedLocationProviderClient(appContext)
 
     @SuppressLint("MissingPermission")
+    /**
+     * Goal: Automatically stop sharescrobbling after moving away from a given point
+     */
     override fun doWork(): Result {
+        // Query source & source location
         val sourceScrobble = privatePreferences.getString("sourceScrobble", null)
         val maxDistance = sharedPreferences.getInt("gpsRange", 50)
         val latitude = privatePreferences.getLong("latitude", 0)
@@ -44,18 +49,18 @@ class GPSTimeoutWorker(appContext: Context, workerParams: WorkerParameters) :
         // Get current location and store it
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             run {
-                Log.d(Constants.TAG, location?.latitude.toString())
-                Log.d(Constants.TAG, location?.longitude.toString())
-
                 currentLocation.latitude = location?.latitude ?: 0.00
                 currentLocation.longitude = location?.longitude ?: 0.00
 
                 val distance = originalLocation.distanceTo(currentLocation)
 
+                // Over the distance from settings ?
                 if (distance > maxDistance.toFloat() && sourceScrobble != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
+                            // Unsubscribe
                             ScrobbleRepository.apiInterface.unsubscribe(sourceScrobble)
+                            // Clean up
                             NotificationUtils.removeNotification(MyApplication.getCtx(), 1)
 
                             editor?.remove("sourceScrobble")

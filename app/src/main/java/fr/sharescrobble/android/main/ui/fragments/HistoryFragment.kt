@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
+    // UI References
     private lateinit var layout: View
 
     private lateinit var loadingIndicator: LinearProgressIndicator
@@ -40,6 +41,7 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_history, container, false)
 
+        // UI References queries
         this.loadingIndicator = this.layout.findViewById(R.id.rvHistoryLoading)
 
         // Set up the pull to refresh
@@ -64,6 +66,9 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
         )
     }
 
+    /**
+     * Load history from API. Enable or not a [progress] bar
+     */
     private fun getHistory(progress: Boolean = true) {
         if (progress) {
             // Display loading
@@ -72,10 +77,12 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Load data
                 val data = UsersRepository.apiInterface.getUserScrobbles(
                     AuthService.currentJwtUser?.id?.toLong() ?: 0
                 )
                 withContext(Dispatchers.Main) {
+                    // Render it
                     data.forEach { i -> Log.d(Constants.TAG, i.toString()) }
                     createOrPopulateRecyclerView(data)
                 }
@@ -88,6 +95,9 @@ class HistoryFragment : Fragment(), HistoryAdapter.ItemClickListener {
         }
     }
 
+    /**
+     * Setup the RecyclerView
+     */
     private fun createOrPopulateRecyclerView(data: Array<UserScrobbleModel>) {
         if (this.adapter == null) {
             this.adapter = HistoryAdapter(activity, data)

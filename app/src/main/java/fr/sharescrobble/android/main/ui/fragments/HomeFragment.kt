@@ -33,9 +33,11 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 class HomeFragment : Fragment() {
+    // References
     private lateinit var privatePreferences: SharedPreferences
     private lateinit var listener: OnSharedPreferenceChangeListener
 
+    // UI References
     private lateinit var layout: View
 
     private lateinit var loadingIndicator: LinearProgressIndicator
@@ -43,8 +45,6 @@ class HomeFragment : Fragment() {
     private lateinit var homeSwipeContainer: SwipeRefreshLayout
     private lateinit var homeNotFound: RelativeLayout
     private lateinit var homeFound: RelativeLayout
-
-    // Not found
     // Found
     private lateinit var cardScrobble: CardView
     private lateinit var scrobblingFromName: TextView
@@ -67,12 +67,13 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         this.layout = inflater.inflate(R.layout.fragment_home, container, false)
 
+        // References queries
         this.privatePreferences =
             requireActivity().getSharedPreferences("Scrobble", Context.MODE_PRIVATE)
 
         this.loadingIndicator = this.layout.findViewById(R.id.homeLoading)
 
-        // Get references
+        // UI References queries
         cardScrobble = layout.findViewById(R.id.cardScrobble)
         scrobblingFromName = layout.findViewById(R.id.scrobblingFromName)
         imageUser = layout.findViewById(R.id.imageUser)
@@ -126,6 +127,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Load ShareScrobbling from API. Enable or not a [progress] bar
+     */
     private fun loadSScrobbleData(progress: Boolean = true) {
         if (progress) {
             // Display loading
@@ -134,6 +138,7 @@ class HomeFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Load data
                 val data = UsersRepository.apiInterface.getUser(
                     AuthService.currentJwtUser?.id?.toLong() ?: 0
                 )
@@ -145,6 +150,7 @@ class HomeFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     Log.d(Constants.TAG, data.toString())
 
+                    // Render it
                     if (data.sourceScrobble != null) {
                         found(data, scrobblesData)
                     } else {
@@ -167,11 +173,17 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Display NotFound view
+     */
     private fun notFound() {
         homeFound.visibility = View.GONE
         homeNotFound.visibility = View.VISIBLE
     }
 
+    /**
+     * Display Found view and render data using [data] and [scrobblesData]
+     */
     private fun found(data: UserModel, scrobblesData: Array<UserScrobbleModel>) {
         homeFound.visibility = View.VISIBLE
         homeNotFound.visibility = View.GONE
@@ -186,9 +198,11 @@ class HomeFragment : Fragment() {
         // Load Last.fm user data
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Load data
                 val sourceData = LastfmRepository.apiInterface.getUser(data.sourceScrobble ?: "")
 
                 withContext(Dispatchers.Main) {
+                    // Render it
                     val imgSize = sourceData.image.size
                     val imgLink = sourceData.image[imgSize - 1].text
 
@@ -231,11 +245,13 @@ class HomeFragment : Fragment() {
     private fun unsubscribe(name: String? = null) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Load data
                 ScrobbleRepository.apiInterface.unsubscribe(
                     name ?: scrobblingFromName.text.toString()
                 )
 
                 withContext(Dispatchers.Main) {
+                    // Clear notification
                     NotificationUtils.removeNotification(requireActivity(), 1)
 
                     // Clear data
@@ -247,9 +263,7 @@ class HomeFragment : Fragment() {
                     WorkManager.getInstance(requireActivity()).cancelAllWorkByTag("timeTimeout")
                     WorkManager.getInstance(requireActivity()).cancelAllWorkByTag("gpsTimeout")
 
-                    Log.d(Constants.TAG, WorkManager.getInstance(requireActivity()).getWorkInfosByTag("timeTimeout").toString())
-                    Log.d(Constants.TAG, WorkManager.getInstance(requireActivity()).getWorkInfosByTag("gpsTimeout").toString())
-
+                    // Render it again
                     loadSScrobbleData()
                 }
             } catch (e: HttpException) {

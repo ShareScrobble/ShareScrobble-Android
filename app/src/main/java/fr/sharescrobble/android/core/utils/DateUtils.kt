@@ -6,6 +6,9 @@ object DateUtils {
     private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
     private const val DAY_MILLIS = 24 * HOUR_MILLIS
 
+    /**
+     * Get a textual representation of a time difference from a given [timeInput]
+     */
     fun getTimeAgo(timeInput: Long): String? {
         var time = timeInput
         if (time < 1000000000000L) {
