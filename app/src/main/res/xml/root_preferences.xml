@@ -1,44 +1,56 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory app:title="ShareScrobble">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/preferences_category_timer">
         <CheckBoxPreference
-            android:title="@string/preferences_enableTimeout"
+            android:layout_height="wrap_content"
+            android:summary="@string/preferences_enableTimeout_summary"
+            android:title="@string/preferences_enableTimeout_title"
             app:defaultValue="true"
+            app:iconSpaceReserved="false"
             app:key="autoTimeout" />
 
         <EditTextPreference
             android:dependency="autoTimeout"
+            android:digits="0123456789"
+            android:inputType="numberDecimal"
             android:title="@string/preferences_timeoutDelay"
             app:defaultValue="300"
-
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
-
+            app:iconSpaceReserved="false"
             app:key="timeout"
             app:useSimpleSummaryProvider="true" />
 
-        <Preference
-            android:icon="@drawable/ic_baseline_power_settings_new_24"
-            android:title="@string/preferences_logout"
-            app:key="logout" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="GPS">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/preferences_category_gps">
         <CheckBoxPreference
-            android:title="@string/preferences_enableGps"
+            android:summary="@string/preferences_enableGps_summary"
+            android:title="@string/preferences_enableGps_title"
             app:defaultValue="false"
+            app:iconSpaceReserved="false"
             app:key="gpsTimeout" />
 
         <EditTextPreference
             android:dependency="gpsTimeout"
+            android:digits="0123456789"
+            android:inputType="numberDecimal"
+            android:summary="In meters"
             android:title="@string/preferences_gpsRange"
             app:defaultValue="50"
-
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
-
+            app:iconSpaceReserved="false"
             app:key="gpsRange"
             app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/preferences_category_sharescrobble"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:icon="@drawable/ic_baseline_power_settings_new_24"
+            android:title="@string/preferences_logout"
+            app:key="logout" />
     </PreferenceCategory>
 </PreferenceScreen>
