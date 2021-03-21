@@ -33,4 +33,5 @@
     <string name="preferences_category_sharescrobble">ShareScrobble</string>
     <string name="preferences_category_timer">Minuteur de ShareScrobbling</string>
     <string name="preferences_category_gps">Localisation de ShareScrobbling</string>
+    <string name="permanent_notification_stopped">Le ShareSrobble a été désactivé automatiquement</string>
 </resources>
