@@ -10,7 +10,12 @@
     <string name="description_userAvatar">Avatar of the user</string>
     <string name="description_avatarUserShareScrobble">Avatar of the user you are sharescrobbling from</string>
 
-    <string name="login">Login with Last.Fm</string>
+    <string name="auth_sharescrobble_logo_description">ShareScrobble logo</string>
+    <string name="auth_welcome_title">Welcome on ShareScrobble</string>
+    <string name="auth_welcome_text">ShareScrobble lets you synchronise one of your friends\' Last.Fm scrobbles to your account.</string>
+    <string name="auth_welcome_text_last">You\'ll never miss a scrobble again!</string>
+    <string name="auth_login_button">Login with Last.Fm</string>
+
     <string name="subscribe">Start following</string>
     <string name="unsubscribe">Stop ShareScrobbling</string>
     <string name="cancel">Cancel</string>
@@ -21,13 +26,19 @@
 
     <string name="alert_friendsSubscribeTo">Subscribe to %1$s?</string>
 
-    <string name="preferences_enableTimeout">Turn off automatically after a set time</string>
-    <string name="preferences_timeoutDelay">Timeout delay (min)</string>
-    <string name="preferences_logout">Logout</string>
-    <string name="preferences_gpsRange">GPS Range</string>
-    <string name="preferences_enableGps">Turn off automatically after being too far away from the source of music (using GPS)</string>
     <string name="permanent_notification_running">ShareScrobble is running</string>
     <string name="permanent_notification_running_from">Currently sharescrobbling from %1$s</string>
     <string name="permanent_notification_button_stop">Stop ShareScrobbling</string>
     <string name="goToFriends">ShareScrobble with a friend</string>
+
+    <string name="preferences_enableTimeout_title">Turn off after delay</string>
+    <string name="preferences_enableTimeout_summary">Turn off automatically after a set time</string>
+    <string name="preferences_timeoutDelay">Timeout delay (min)</string>
+    <string name="preferences_logout">Logout</string>
+    <string name="preferences_gpsRange">Maximum range (in meters)</string>
+    <string name="preferences_enableGps_title">Turn off when I leave</string>
+    <string name="preferences_enableGps_summary">Turn off automatically after being too far away from the place where I started the ShareScrobbling</string>
+    <string name="preferences_category_sharescrobble">ShareScrobble</string>
+    <string name="preferences_category_timer">ShareScrobbling Timer</string>
+    <string name="preferences_category_gps">ShareScrobbling Location</string>
 </resources>
