@@ -27,6 +27,7 @@
     <string name="alert_friendsSubscribeTo">Subscribe to %1$s?</string>
 
     <string name="permanent_notification_running">ShareScrobble is running</string>
+    <string name="permanent_notification_stopped">ShareScrobble was stopped automatically</string>
     <string name="permanent_notification_running_from">Currently sharescrobbling from %1$s</string>
     <string name="permanent_notification_button_stop">Stop ShareScrobbling</string>
     <string name="goToFriends">ShareScrobble with a friend</string>
