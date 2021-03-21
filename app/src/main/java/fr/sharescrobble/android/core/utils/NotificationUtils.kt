@@ -54,7 +54,7 @@ object NotificationUtils {
         }
         val tapIntent: PendingIntent = PendingIntent.getActivity(ctx, 0, intent, 0)
 
-        builder.setContentTitle(context.getString(R.string.permanent_notification_stopped))
+        builder.setContentTitle(ctx.getString(R.string.permanent_notification_stopped))
         builder.setSmallIcon(R.drawable.ic_launcher_foreground)
         builder.setContentIntent(tapIntent)
         builder.priority = NotificationCompat.PRIORITY_MAX
