@@ -10,7 +10,12 @@
     <string name="description_userAvatar">Avatar of the user</string>
     <string name="description_avatarUserShareScrobble">Avatar of the user you are sharescrobbling from</string>
 
-    <string name="login">Login with Last.Fm</string>
+    <string name="auth_sharescrobble_logo_description">ShareScrobble logo</string>
+    <string name="auth_welcome_title">Welcome on ShareScrobble</string>
+    <string name="auth_welcome_text">ShareScrobble lets you synchronise one of your friends\' Last.Fm scrobbles to your account.</string>
+    <string name="auth_welcome_text_last">You\'ll never miss a scrobble again!</string>
+    <string name="auth_login_button">Login with Last.Fm</string>
+
     <string name="subscribe">Start following</string>
     <string name="unsubscribe">Stop ShareScrobbling</string>
     <string name="cancel">Cancel</string>

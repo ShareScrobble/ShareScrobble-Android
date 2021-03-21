@@ -7,7 +7,7 @@
     <string name="action_settings">Paramètres</string>
     <string name="subscribe">Commencer la synchronisation</string>
     <string name="cancel">Annuler</string>
-    <string name="login">Se connecter avec Last.Fm</string>
+    <string name="auth_login_button">Se connecter avec Last.Fm</string>
     <string name="notFound">Vous n\'êtes pas actuellement en train de ShareScrobbler</string>
     <string name="unsubscribe">Arrêter le ShareScrobbling</string>
     <string name="description_albumCover">Couverture d\'album</string>
@@ -24,4 +24,8 @@
     <string name="permanent_notification_running_from">En train de ShareScrobbler depuis %1$s</string>
     <string name="permanent_notification_button_stop">Arrêter de ShareScrobbler</string>
     <string name="goToFriends">ShareScrobbler depuis un ami</string>
+    <string name="auth_sharescrobble_logo_description">Logo ShareScrobble</string>
+    <string name="auth_welcome_title">Bienvenue sur ShareScrobble</string>
+    <string name="auth_welcome_text">ShareScrobble vous permet de synchronsier vos scrobbles Last.Fm avec ceux d\'un ami.</string>
+    <string name="auth_welcome_text_last">Vous ne raterez plus aucun scrobble !</string>
 </resources>
